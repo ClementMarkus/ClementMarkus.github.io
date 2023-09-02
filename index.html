@@ -8,7 +8,7 @@
             text-align: center;
             padding: 20px;
             color: white; /* Set text color to white for better visibility on blue background */
-            font-size: 50px;
+            font-size: 40px;
         }
 
         /* Style the "Dashboard" section */
@@ -21,13 +21,13 @@
         /* Style the buttons */
         .button-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: px;
         }
 
         .button {
-            background-color: #4CAF50; /* Green background */
+            background-color: white; /* Green background */
             border: none; /* Remove borders */
-            color: white; /* White text */
+            color: #00334E; /* White text */
             padding: 10px 20px; /* Padding for better visual */
             text-align: center;
             text-decoration: none;
@@ -40,6 +40,13 @@
 
         .button:hover {
             background-color: #45a049; /* Darker green when hovered */
+        }
+
+        /* Style the graph container */
+        .graph-container {
+            margin-top: 20px;
+            background-color: #F0F0F0; /* Gray background for the graph */
+            padding: 20px;
         }
     </style>
 </head>
@@ -56,10 +63,14 @@
             <button class="button">Canada</button>
             <button class="button">USA</button>
         </div>
+    </div>
 
+    <!-- Graph container -->
+    <div class="graph-container">
         <!-- Embed your Plotly graph using an iframe -->
         <iframe src="unemployement_rate_us.html" width="800" height="600"></iframe>
     </div>
 </body>
 </html>
+
 
