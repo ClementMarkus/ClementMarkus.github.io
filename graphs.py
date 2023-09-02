@@ -40,3 +40,28 @@ def unrate_usa(start_date='1990-01-01',end_date=dt.today()):
                       ,xaxis_title='Date',yaxis_title='Taux de chômage (%)',template="simple_white",
                       legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
     fig.write_html("unemployement_rate_us.html",config=config)
+    
+def cpi_usa(start_date='1990-01-01',end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the consumer price index rate in the us
+    https://fred.stlouisfed.org/series/CPALTT01USM659N
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the CPI in US
+    """
+    cpi=web.DataReader('CPALTT01USM659N','fred', start=start_date, end=end_date)
+    core=web.DataReader('CPGRLE01CAM659N','fred', start=start_date, end=end_date)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=cpi.index, y=cpi['CPALTT01USM659N'],line_color='#00334E', name='IPC'))
+    fig.add_trace(go.Scatter(x=core.index, y=core['CPGRLE01CAM659N'],line_color='#ED1C26', name='IPC de base'))
+    fig.update_layout(title={'text': 'Indice des prix à la consommation','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='IPC (%)',template="simple_white",
+                      legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.write_html("cpi_us.html",config=config)
