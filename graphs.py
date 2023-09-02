@@ -65,3 +65,25 @@ def cpi_usa(start_date='1990-01-01',end_date=dt.today()):
     fig.update_layout(title={'text': 'Indice des prix à la consommation','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='IPC (%)',template="simple_white",
                       legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
     fig.write_html("cpi_us.html",config=config)
+    
+def fedfunds_usa(start_date='2015-01-01',end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the Federal Funds Effective Rate in the us
+    https://fred.stlouisfed.org/series/FEDFUNDS
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the fedfunds in US
+    """
+    df=web.DataReader('FEDFUNDS','fred', start=start_date, end=end_date)
+    df=df.rename(columns={'FEDFUNDS':'Taux effectif des fonds fédéraux'})
+    fig = go.Figure(data=[go.Scatter(x=df.index, y=df['Taux effectif des fonds fédéraux'],line_color='#203864')])
+    fig.update_layout(title={'text': 'Taux effectif des fonds fédéraux','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='Taux effectif des fonds fédéraux (%)',template="simple_white")
+    fig.write_html("fedfunds_us.html",config=config)
