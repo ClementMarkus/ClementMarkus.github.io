@@ -36,10 +36,12 @@
             cursor: pointer;
             border-radius: 20px; /* Rounded corners */
             margin-right: 20px; /* Add some space between buttons */
+            transition: background-color 0.3s ease;
         }
 
         .button:hover {
             background-color: #45a049; /* Darker green when hovered */
+            color: white;
         }
 
         /* Style the graph container */
@@ -60,8 +62,8 @@
     <div class="dashboard-section">
         <!-- Button container -->
         <div class="button-container">
-            <button class="button"><a href="index.html">Canada</a></button>
-            <button class="button"><a href="usa.html">USA</a></button>
+            <button class="button" onclick="location.href='index.html';">Canada</button>
+            <button class="button" onclick="location.href='usa.html';">USA</button>
         </div>
     </div>
 
