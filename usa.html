@@ -46,9 +46,11 @@
 
         /* Style the graph container */
         .graph-container {
-            margin-top: 20px;
-            background-color: #F0F0F0; /* Gray background for the graph */
-            padding: 20px;
+            margin-top: 1px;
+            background-color: white; /* Gray background for the graph */
+            padding: 1px;
+            display: flex;
+            flex-direction: row;
         }
         .h1{
             color: white;
@@ -77,6 +79,12 @@
     </div>
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
-    </div>
+</div>
+    <div class="graph-container">
+    <!-- Embed your Plotly graph using an iframe -->
+    <iframe src="unemployement_rate_us.html" frameborder="O" width="800" height="600"></iframe>
+    <iframe src="cpi_us.html" frameborder="O" width="800" height="600"></iframe>
+    <iframe src="fedfunds_us.html" frameborder="O" width="800" height="600"></iframe>
+</div>
 </body>
 </html>
