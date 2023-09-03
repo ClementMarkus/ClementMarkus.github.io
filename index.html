@@ -82,25 +82,32 @@
     <h1>Données Macroéconomiques</h1>
 </div>
 <hr> <!-- Horizontal line -->
-<p>Last update: <span id="lastUpdate"></span></p>
-
-<!-- JavaScript code to fetch GitHub data -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    const repoOwner = 'ClementMarkus';
-    const repoName = 'ClementMarkus.github.io';
+    const desiredRepo = "clementmarkus.github.io"; // Replace with your desired repository name
+    const dateTagClass = ".date"; // Replace with the appropriate class or selector for your HTML element
 
-    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/commits?per_page=1`)
-        .then(response => response.json())
-        .then(data => {
-            const lastCommitDate = new Date(data[0].commit.author.date);
-            const lastUpdateElement = document.getElementById('lastUpdate');
-            const formattedDate = `${lastCommitDate.getFullYear()}-${(lastCommitDate.getMonth() + 1).toString().padStart(2, '0')}-${lastCommitDate.getDate().toString().padStart(2, '0')}`;
-            lastUpdateElement.textContent = `Last update: ${formattedDate}`;
-        })
-        .catch(error => {
-            console.error('Error fetching GitHub data:', error);
-        });
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            let repos = JSON.parse(this.responseText);
+
+            repos.forEach((repo) => {
+                if (repo.name == desiredRepo) {
+                    var lastUpdated = new Date(repo.updated_at);
+                    var day = lastUpdated.getUTCDate();
+                    var month = lastUpdated.getUTCMonth() + 1; // Add 1 because getUTCMonth() returns 0-based month
+                    var year = lastUpdated.getUTCFullYear();
+
+                    $(dateTagClass).text(`Last updated: ${year}-${month}-${day}`);
+                }
+            });
+        }
+    };
+    xhttp.open("GET", "https://api.github.com/users/ClementMarkus/repos", true); // Replace YOUR_USERNAME with your GitHub username
+    xhttp.send();
 </script>
+<p class="date">Last updated: </p>
 </body>
 </html>
 
