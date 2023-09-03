@@ -62,6 +62,15 @@
             text-align: center;
     
         }
+        .currentDateContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -81,33 +90,17 @@
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
+<div class="currentDateContainer">
 <hr> <!-- Horizontal line -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    const desiredRepo = "clementmarkus.github.io"; // Replace with your desired repository name
-    const dateTagClass = ".date"; // Replace with the appropriate class or selector for your HTML element
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            let repos = JSON.parse(this.responseText);
-
-            repos.forEach((repo) => {
-                if (repo.name == desiredRepo) {
-                    var lastUpdated = new Date(repo.updated_at);
-                    var day = lastUpdated.getUTCDate();
-                    var month = lastUpdated.getUTCMonth() + 1; // Add 1 because getUTCMonth() returns 0-based month
-                    var year = lastUpdated.getUTCFullYear();
-
-                    $(dateTagClass).text(`Last updated: ${year}-${month}-${day}`);
-                }
-            });
-        }
-    };
-    xhttp.open("GET", "https://api.github.com/users/ClementMarkus/repos", true); // Replace YOUR_USERNAME with your GitHub username
-    xhttp.send();
-</script>
-<p class="date">Last updated: </p>
+<p>Last updated: <span id="currentDate"></span></p>
+</div>
+    <script>
+        // JavaScript code to get the current date and time
+        var currentDateElement = document.getElementById("currentDate");
+        var currentDate = new Date();
+        var options = { year: 'numeric', month: 'long', day: 'numeric' };
+        currentDateElement.innerHTML = currentDate.toLocaleDateString('en-US', options);
+    </script>
 </body>
 </html>
 

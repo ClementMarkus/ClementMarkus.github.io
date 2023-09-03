@@ -61,6 +61,15 @@
             text-align: center;
     
         }
+        .currentDateContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -86,5 +95,16 @@
     <iframe src="cpi_us.html" frameborder="O" width="800" height="600"></iframe>
     <iframe src="fedfunds_us.html" frameborder="O" width="800" height="600"></iframe>
 </div>
+<div class="currentDateContainer">
+    <hr> <!-- Horizontal line -->
+    <p>Last updated: <span id="currentDate"></span></p>
+    </div>
+        <script>
+            // JavaScript code to get the current date and time
+            var currentDateElement = document.getElementById("currentDate");
+            var currentDate = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.innerHTML = currentDate.toLocaleDateString('en-US', options);
+        </script>
 </body>
 </html>
