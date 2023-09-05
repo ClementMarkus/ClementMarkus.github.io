@@ -39,7 +39,7 @@ def unrate_usa(start_date='1990-01-01',end_date=dt.today()):
     fig.update_layout(title={'text': 'Taux de chômage','x': 0.5,'xanchor': 'center'}
                       ,xaxis_title='Date',yaxis_title='Taux de chômage (%)',template="simple_white",
                       legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
-    fig.write_html("unemployement_rate_us.html",config=config)
+    fig.write_html("graph/unemployement_rate_us.html",config=config)
     
 def cpi_usa(start_date='1990-01-01',end_date=dt.today()):
     """
@@ -64,7 +64,7 @@ def cpi_usa(start_date='1990-01-01',end_date=dt.today()):
     fig.add_trace(go.Scatter(x=core.index, y=core['CPGRLE01CAM659N'],line_color='#ED1C26', name='IPC de base'))
     fig.update_layout(title={'text': 'Indice des prix à la consommation','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='IPC (%)',template="simple_white",
                       legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
-    fig.write_html("cpi_us.html",config=config)
+    fig.write_html("graph/cpi_us.html",config=config)
     
 def fedfunds_usa(start_date='2015-01-01',end_date=dt.today()):
     """
@@ -86,4 +86,4 @@ def fedfunds_usa(start_date='2015-01-01',end_date=dt.today()):
     df=df.rename(columns={'FEDFUNDS':'Taux effectif des fonds fédéraux'})
     fig = go.Figure(data=[go.Scatter(x=df.index, y=df['Taux effectif des fonds fédéraux'],line_color='#203864')])
     fig.update_layout(title={'text': 'Taux effectif des fonds fédéraux','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='Taux effectif des fonds fédéraux (%)',template="simple_white")
-    fig.write_html("fedfunds_us.html",config=config)
+    fig.write_html("graph/fedfunds_us.html",config=config)
