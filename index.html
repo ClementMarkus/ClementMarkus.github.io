@@ -91,13 +91,13 @@
         .modern-news-feed {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;
+        gap: 1px;
         justify-content: space-between;
     }
 
     .news-item {
         width: calc(33.33% - 10px); /* Adjust the width as needed for your layout */
-        background-color: #f0f0f0;
+        background-color: white;
         padding: 10px;
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -150,13 +150,14 @@
         </div>
         <div class="div">
             <h1>Nouvelles économiques</h1>
+            <div id="rss-feed" class="modern-news-feed"></div>
     </div>
 </div>
 <hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
-<div id="rss-feed" class="modern-news-feed"></div>
+
 <script>
     // Get a reference to the div where you want to display the RSS feed
     const rssFeedDiv = document.getElementById('rss-feed');
