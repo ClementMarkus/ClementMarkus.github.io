@@ -120,71 +120,49 @@
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
-<div id="rss-feed"></div>
+<div id="news-feed"></div>
 <script>
-    // Get a reference to the div where you want to display the RSS feed
-    const rssFeedDiv = document.getElementById('rss-feed');
+    async function fetchNewsFeed() {
+            try {
+                const response = await fetch("https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15837362");
+                const xmlText = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
-    // RSS feed URL
-    const rssURL = 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15837362';
+                const newsFeed = document.getElementById("news-feed");
 
-    // Fetch the RSS feed
-    fetch(rssURL)
-        .then(response => response.text())
-        .then(data => {
-            // Parse the XML data
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data, 'text/xml');
+                xmlDoc.querySelectorAll("item").forEach((item) => {
+                    const title = item.querySelector("title").textContent;
+                    const description = item.querySelector("description").textContent;
+                    const image = item.querySelector("media\\:content").getAttribute("url");
 
-            // Extract and display the relevant information from the RSS feed
-            const items = xmlDoc.querySelectorAll('item');
-            items.forEach(item => {
-                const title = item.querySelector('title').textContent;
-                const link = item.querySelector('link').textContent;
-                const description = item.querySelector('description').textContent;
-                const imgTag = description.match(/<img[^>]+>/i); // Extract the image tag
+                    // Create HTML elements for each news item
+                    const newsItem = document.createElement("div");
+                    newsItem.classList.add("news-item");
 
-                // Create a news item element
-                const newsItem = document.createElement('div');
-                newsItem.classList.add('news-item');
+                    const newsImage = document.createElement("img");
+                    newsImage.src = image;
+                    newsImage.alt = title;
 
-                // Create an image element
-                const newsImage = document.createElement('div');
-                newsImage.classList.add('news-image');
-                if (imgTag) {
-                    // Extract the image source from the image tag
-                    const imgSrc = imgTag[0].match(/src="([^"]+)"/i);
-                    if (imgSrc && imgSrc[1]) {
-                        const img = document.createElement('img');
-                        img.src = imgSrc[1];
-                        newsImage.appendChild(img);
-                    }
-                }
+                    const newsTitle = document.createElement("h2");
+                    newsTitle.textContent = title;
 
-                // Create a title element
-                const newsTitle = document.createElement('div');
-                newsTitle.classList.add('news-title');
-                newsTitle.textContent = title;
+                    const newsDescription = document.createElement("p");
+                    newsDescription.textContent = description;
 
-                // Create a link element
-                const newsLink = document.createElement('a');
-                newsLink.classList.add('news-link');
-                newsLink.textContent = 'Read more';
-                newsLink.href = link;
-                newsLink.target = '_blank';
+                    // Append elements to the news feed
+                    newsItem.appendChild(newsImage);
+                    newsItem.appendChild(newsTitle);
+                    newsItem.appendChild(newsDescription);
+                    newsFeed.appendChild(newsItem);
+                });
+            } catch (error) {
+                console.error("Error fetching or parsing XML:", error);
+            }
+        }
 
-                // Append image, title, and link to the news item
-                newsItem.appendChild(newsImage);
-                newsItem.appendChild(newsTitle);
-                newsItem.appendChild(newsLink);
-
-                // Append the news item to the RSS feed container
-                rssFeedDiv.appendChild(newsItem);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching the RSS feed:', error);
-        });
+        // Call the fetchNewsFeed function when the page loads
+        window.onload = fetchNewsFeed;
 </script>
 <div class="currentDateContainer">
 <hr> <!-- Horizontal line -->
