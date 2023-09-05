@@ -88,6 +88,42 @@
             align-items: center;
             text-align: center;
         }
+        .modern-news-feed {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .news-item {
+        width: calc(33.33% - 10px); /* Adjust the width as needed for your layout */
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .news-image img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .news-title {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .news-link {
+        color: #0078D4;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .news-link:hover {
+        text-decoration: underline;
+    }
     </style>
 </head>
 <body>
@@ -120,49 +156,71 @@
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
-<div id="news-feed"></div>
+<div id="rss-feed" class="modern-news-feed"></div>
 <script>
-    async function fetchNewsFeed() {
-            try {
-                const response = await fetch("https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15837362");
-                const xmlText = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+    // Get a reference to the div where you want to display the RSS feed
+    const rssFeedDiv = document.getElementById('rss-feed');
 
-                const newsFeed = document.getElementById("news-feed");
+    // RSS feed URL
+    const rssURL = 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15837362';
 
-                xmlDoc.querySelectorAll("item").forEach((item) => {
-                    const title = item.querySelector("title").textContent;
-                    const description = item.querySelector("description").textContent;
-                    const image = item.querySelector("media\\:content").getAttribute("url");
+    // Fetch the RSS feed
+    fetch(rssURL)
+        .then(response => response.text())
+        .then(data => {
+            // Parse the XML data
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, 'text/xml');
 
-                    // Create HTML elements for each news item
-                    const newsItem = document.createElement("div");
-                    newsItem.classList.add("news-item");
+            // Extract and display the relevant information from the RSS feed
+            const items = xmlDoc.querySelectorAll('item');
+            items.forEach(item => {
+                const title = item.querySelector('title').textContent;
+                const link = item.querySelector('link').textContent;
+                const description = item.querySelector('description').textContent;
+                const imgTag = description.match(/<img[^>]+>/i); // Extract the image tag
 
-                    const newsImage = document.createElement("img");
-                    newsImage.src = image;
-                    newsImage.alt = title;
+                // Create a news item element
+                const newsItem = document.createElement('div');
+                newsItem.classList.add('news-item');
 
-                    const newsTitle = document.createElement("h2");
-                    newsTitle.textContent = title;
+                // Create an image element
+                const newsImage = document.createElement('div');
+                newsImage.classList.add('news-image');
+                if (imgTag) {
+                    // Extract the image source from the image tag
+                    const imgSrc = imgTag[0].match(/src="([^"]+)"/i);
+                    if (imgSrc && imgSrc[1]) {
+                        const img = document.createElement('img');
+                        img.src = imgSrc[1];
+                        newsImage.appendChild(img);
+                    }
+                }
 
-                    const newsDescription = document.createElement("p");
-                    newsDescription.textContent = description;
+                // Create a title element
+                const newsTitle = document.createElement('div');
+                newsTitle.classList.add('news-title');
+                newsTitle.textContent = title;
 
-                    // Append elements to the news feed
-                    newsItem.appendChild(newsImage);
-                    newsItem.appendChild(newsTitle);
-                    newsItem.appendChild(newsDescription);
-                    newsFeed.appendChild(newsItem);
-                });
-            } catch (error) {
-                console.error("Error fetching or parsing XML:", error);
-            }
-        }
+                // Create a link element
+                const newsLink = document.createElement('a');
+                newsLink.classList.add('news-link');
+                newsLink.textContent = 'Read more';
+                newsLink.href = link;
+                newsLink.target = '_blank';
 
-        // Call the fetchNewsFeed function when the page loads
-        window.onload = fetchNewsFeed;
+                // Append image, title, and link to the news item
+                newsItem.appendChild(newsImage);
+                newsItem.appendChild(newsTitle);
+                newsItem.appendChild(newsLink);
+
+                // Append the news item to the RSS feed container
+                rssFeedDiv.appendChild(newsItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching the RSS feed:', error);
+        });
 </script>
 <div class="currentDateContainer">
 <hr> <!-- Horizontal line -->
