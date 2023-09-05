@@ -71,6 +71,22 @@
             padding: 10px;
             text-align: center;
         }
+        .container {
+            display: flex; /* Use flexbox to arrange the divs side by side */
+        }
+
+        /* Style for each individual div */
+        .div {
+            width: 50%;
+            padding: 1px;
+            border: 1px solid #ccc; /* Add a border for visual separation */
+            color: white;
+            background-color: #00334E;
+            font-size: 10px;
+            font-weight: bold;
+            align-items: center;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -87,6 +103,20 @@
             <button class="button" onclick="location.href='usa.html';">USA</button>
         </div>
     </div>
+    
+    <div class="container">
+        <div class="div">
+            <h1>Évolution du prix du S&P 500</h1>
+        </div>
+        <div class="div">
+            <h1>Nouvelles économiques</h1>
+    </div>
+    </div>
+
+
+
+
+
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
