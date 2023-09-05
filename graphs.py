@@ -143,3 +143,102 @@ def savings_usa(start_date='2008-01-01',end_date=dt.today()):
     fig = go.Figure(data=[go.Scatter(x=df.index, y=df["Taux d'épargne des particuliers"],line_color='#203864')])
     fig.update_layout(title={'text': "Taux d'épargne des particuliers",'x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title="Taux d'épargne des particuliers (%)",template="simple_white")
     fig.write_html("graph/savings_us.html",config=config)
+    
+def moving_average(df, n,stock='XIU.TO'):
+    """
+    Function to calculate the moving average of a dataframe
+    
+    Parameters
+    ----------
+    df: dataframe
+    n: window size
+    
+    Returns
+    ------
+    a new dataframe containing the moving average values
+    """
+    ma = df.rolling(n).mean()
+    ma = ma.rename(columns={stock: 'MA' + str(n)})
+    return ma
+
+def sp_tsx(start_date='2019-01-01', end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the ajd close price of XIU.TO
+    
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot S&P/TSX Composite Index
+    """
+    df = yf.download('^GSPTSE', start_date , end_date,progress=False)
+    df = df[['Adj Close']]
+    df = df.rename(columns={'Adj Close': '^GSPTSE'})
+
+    # Create the figure
+    fig = go.Figure()
+    ma30 = moving_average(df, 30,stock='^GSPTSE')
+    ma200 = moving_average(df, 200,stock='^GSPTSE')
+
+    # Add the trace
+    fig.add_trace(go.Scatter(x=df.index, y=df["^GSPTSE"], line_color='#00334E',name="^GSPTSE"))
+    fig.add_trace(go.Scatter(x=ma30.index, y=ma30["MA30"], line_color='#ED1C26',name="MA30"))
+    fig.add_trace(go.Scatter(x=ma200.index, y=ma200["MA200"], line_color='#5A9BD5',name="MA200"))
+
+    
+
+    # Update the layout
+    fig.update_layout(
+        #title={'text': "ETF d'actions canadiennes XIU",'x': 0.5,'xanchor': 'center'},
+        xaxis_title='Date',
+        yaxis_title="Prix ajusté",
+        template="simple_white"
+    )
+    fig.write_html("graph/sp_tsx.html",config=config)
+
+def sp_500(start_date='2019-01-01', end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the ajd close price of XIU.TO
+    
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot S&P/TSX Composite Index
+    """
+    df = yf.download('^GSPC', start_date , end_date,progress=False)
+    df = df[['Adj Close']]
+    df = df.rename(columns={'Adj Close': '^GSPC'})
+
+    # Create the figure
+    fig = go.Figure()
+    ma30 = moving_average(df, 30,stock='^GSPC')
+    ma200 = moving_average(df, 200,stock='^GSPC')
+
+    # Add the trace
+    fig.add_trace(go.Scatter(x=df.index, y=df["^GSPC"], line_color='#00334E',name="^GSPC"))
+    fig.add_trace(go.Scatter(x=ma30.index, y=ma30["MA30"], line_color='#ED1C26',name="MA30"))
+    fig.add_trace(go.Scatter(x=ma200.index, y=ma200["MA200"], line_color='#5A9BD5',name="MA200"))
+
+    
+
+    # Update the layout
+    fig.update_layout(
+        #title={'text': "ETF d'actions canadiennes XIU",'x': 0.5,'xanchor': 'center'},
+        xaxis_title='Date',
+        yaxis_title="Prix ajusté",
+        template="simple_white"
+    )
+    fig.write_html("graph/sp_500.html",config=config)

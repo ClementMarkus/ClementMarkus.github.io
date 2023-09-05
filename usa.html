@@ -60,6 +60,7 @@
             font-weight: bold;
             align-items: center;
             text-align: center;
+            padding: 1px;
     
         }
         .currentDateContainer {
@@ -108,17 +109,19 @@
     <div class="container">
         <div class="div">
             <h1>Évolution du prix du S&P 500</h1>
+            <div class="graph-container">
+                <iframe src="graph\sp_500.html" frameborder="O" width="800" height="600"></iframe>
+        </div>
         </div>
         <div class="div">
             <h1>Nouvelles économiques</h1>
     </div>
 </div>
-
+<hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
     <div class="graph-container">
-    <!-- Embed your Plotly graph using an iframe -->
     <iframe src="graph\unemployement_rate_us.html" frameborder="O" width="800" height="600"></iframe>
     <iframe src="graph\cpi_us.html" frameborder="O" width="800" height="600"></iframe>
     <iframe src="graph\fedfunds_us.html" frameborder="O" width="800" height="600"></iframe>
