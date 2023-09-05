@@ -52,7 +52,6 @@
             padding: 1px;
             display: flex;
             flex-direction: row;
-            
         }
         .h1{
             color: white;
@@ -72,38 +71,25 @@
             padding: 10px;
             text-align: center;
         }
-        #rss-feed {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+        .container {
+            display: flex; /* Use flexbox to arrange the divs side by side */
         }
 
-        .news-item {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            display: flex;
-        }
-
-        .news-image {
-            width: 100px;
-            margin-right: 10px;
-        }
-
-        .news-title {
+        /* Style for each individual div */
+        .div {
+            width: 50%;
+            padding: 1px;
+            border: 1px solid #ccc; /* Add a border for visual separation */
+            color: white;
+            background-color: #00334E;
+            font-size: 10px;
             font-weight: bold;
-            flex-grow: 1;
-        }
-
-        .news-link {
-            text-decoration: none;
-            color: #333;
+            align-items: center;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <!-- Create the header with the text "Dashboard" -->
     <div class="header">
         <strong>Dashboard</strong>
     </div>
@@ -115,8 +101,18 @@
             <button class="button" onclick="location.href='index.html';">Canada</button>
             <button class="button" onclick="location.href='usa.html';">USA</button>
         </div>
-        
     </div>
+    <hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
+    
+    <div class="container">
+        <div class="div">
+            <h1>Évolution du prix du S&P TSX</h1>
+        </div>
+        <div class="div">
+            <h1>Nouvelles économiques</h1>
+    </div>
+</div>
+
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
