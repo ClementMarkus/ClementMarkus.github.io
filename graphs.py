@@ -11,8 +11,8 @@ config = {
   'toImageButtonOptions': {
     'format': 'png', # one of png, svg, jpeg, webp
     'filename': 'custom_image',
-    'height': 500,
-    'width': 700,
+    'height': 600,
+    'width': 800,
     'scale': 7  }} # Multiply title/legend/axis/canvas sizes by this factor
 
 def unrate_usa(start_date='1990-01-01',end_date=dt.today()):
