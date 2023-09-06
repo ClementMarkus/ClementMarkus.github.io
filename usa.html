@@ -88,6 +88,48 @@
             align-items: center;
             text-align: center;
         }
+        .modern-news-feed {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: space-between;
+        background-color: white;
+        padding: 10px;
+        max-height: 580px;
+        overflow-y: auto;
+        width: 800px;
+    }
+
+    .news-item {
+        width: calc(50% - 5px); /* Adjust the width as needed for your layout */
+        background-color: #00334E;
+        padding: 1px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .news-image img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .news-title {
+        font-weight: bold;
+        margin-top: 1px;
+        font-size: 12px;
+    }
+
+    .news-link {
+        color: #0078D4;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 1px;
+    }
+
+    .news-link:hover {
+        text-decoration: underline;
+    }
     </style>
 </head>
 <body>
@@ -115,8 +157,74 @@
         </div>
         <div class="div">
             <h1>Nouvelles économiques</h1>
+            <div id="rss-feed" class="modern-news-feed"></div>
     </div>
 </div>
+<script>
+    // Get a reference to the div where you want to display the RSS feed
+    const rssFeedDiv = document.getElementById('rss-feed');
+
+    // RSS feed URL
+    const rssURL = 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15837362';
+
+    // Fetch the RSS feed
+    fetch(rssURL)
+        .then(response => response.text())
+        .then(data => {
+            // Parse the XML data
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, 'text/xml');
+
+            // Extract and display the relevant information from the RSS feed
+            const items = xmlDoc.querySelectorAll('item');
+            items.forEach(item => {
+                const title = item.querySelector('title').textContent;
+                const link = item.querySelector('link').textContent;
+                const description = item.querySelector('description').textContent;
+                const imgTag = description.match(/<img[^>]+>/i); // Extract the image tag
+
+                // Create a news item element
+                const newsItem = document.createElement('div');
+                newsItem.classList.add('news-item');
+
+                // Create an image element
+                const newsImage = document.createElement('div');
+                newsImage.classList.add('news-image');
+                if (imgTag) {
+                    // Extract the image source from the image tag
+                    const imgSrc = imgTag[0].match(/src="([^"]+)"/i);
+                    if (imgSrc && imgSrc[1]) {
+                        const img = document.createElement('img');
+                        img.src = imgSrc[1];
+                        newsImage.appendChild(img);
+                    }
+                }
+
+                // Create a title element
+                const newsTitle = document.createElement('div');
+                newsTitle.classList.add('news-title');
+                newsTitle.textContent = title;
+
+                // Create a link element
+                const newsLink = document.createElement('a');
+                newsLink.classList.add('news-link');
+                newsLink.textContent = 'Read more';
+                newsLink.href = link;
+                newsLink.target = '_blank';
+
+                // Append image, title, and link to the news item
+                newsItem.appendChild(newsImage);
+                newsItem.appendChild(newsTitle);
+                newsItem.appendChild(newsLink);
+
+                // Append the news item to the RSS feed container
+                rssFeedDiv.appendChild(newsItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching the RSS feed:', error);
+        });
+</script>
 <hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
     <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
