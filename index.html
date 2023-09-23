@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard Canada</title>
+    <title>Dashboard USA</title>
     <style>
         /* Define the styles for the header */
         .header {
@@ -52,7 +52,6 @@
             padding: 1px;
             display: flex;
             flex-direction: row;
-            
         }
         .h1{
             color: white;
@@ -91,13 +90,13 @@
         }
         .modern-news-feed {
         display: flex;
-        flex-wrap: wrap; 
+        flex-wrap: wrap;
         gap: 5px;
         justify-content: space-between;
         background-color: white;
         padding: 10px;
         overflow-y: auto;
-        max-width: 582px;
+        max-height: 582px;
         
     }
 
@@ -109,15 +108,18 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
+
     .news-image img {
         max-width: 100%;
         height: auto;
     }
+
     .news-title {
         font-weight: bold;
         margin-top: 1px;
         font-size: 12px;
     }
+
     .news-link {
         color: #0078D4;
         text-decoration: none;
@@ -131,6 +133,7 @@
     </style>
 </head>
 <body>
+    <!-- Create the header with the text "Dashboard" -->
     <div class="header">
         <strong>Dashboard</strong>
     </div>
@@ -147,7 +150,7 @@
     
     <div class="container">
         <div class="div">
-            <h1>Évolution du prix du S&P TSX</h1>
+            <h1>Évolution du prix du S&P 500</h1>
             <div class="graph-container">
                 <iframe src="graph\sp_tsx.html" frameborder="O" width="800" height="600"></iframe>
         </div>
@@ -223,10 +226,10 @@
         });
 </script>
 <hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
-<div class="h1"> 
+    <div class="h1"> 
     <h1>Données Macroéconomiques</h1>
 </div>
-<div class="graph-container">
+    <div class="graph-container">
     <iframe src="graph\unemployement_rate_us.html" frameborder="O" width="800" height="600"></iframe>
     <iframe src="graph\cpi_us.html" frameborder="O" width="800" height="600"></iframe>
     <iframe src="graph\fedfunds_us.html" frameborder="O" width="800" height="600"></iframe>
@@ -237,17 +240,15 @@
     <iframe src="graph\vix.html" frameborder="O" width="800" height="600"></iframe>
 </div>
 <div class="currentDateContainer">
-<hr> <!-- Horizontal line -->
-<p>Last updated: <span id="currentDate"></span></p>
-</div>
-    <script>
-        // JavaScript code to get the current date and time
-        var currentDateElement = document.getElementById("currentDate");
-        var currentDate = new Date();
-        var options = { year: 'numeric', month: 'long', day: 'numeric' };
-        currentDateElement.innerHTML = currentDate.toLocaleDateString('en-US', options);
-    </script>
+    <hr> <!-- Horizontal line -->
+    <p>Last updated: <span id="currentDate"></span></p>
+    </div>
+        <script>
+            // JavaScript code to get the current date and time
+            var currentDateElement = document.getElementById("currentDate");
+            var currentDate = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.innerHTML = currentDate.toLocaleDateString('en-US', options);
+        </script>
 </body>
 </html>
-
-
