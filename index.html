@@ -91,14 +91,14 @@
         }
         .modern-news-feed {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: wrap; 
         gap: 5px;
         justify-content: space-between;
         background-color: white;
         padding: 10px;
-        max-height: 580px;
         overflow-y: auto;
-        width: 800px;
+        max-width: 582px;
+        
     }
 
     .news-item {
@@ -109,18 +109,15 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
-
     .news-image img {
         max-width: 100%;
         height: auto;
     }
-
     .news-title {
         font-weight: bold;
         margin-top: 1px;
         font-size: 12px;
     }
-
     .news-link {
         color: #0078D4;
         text-decoration: none;
@@ -230,6 +227,9 @@
             console.error('Error fetching the RSS feed:', error);
         });
 </script>
+<div class="h1"> 
+    <h1>Données Macroéconomiques</h1>
+</div>
 <div class="currentDateContainer">
 <hr> <!-- Horizontal line -->
 <p>Last updated: <span id="currentDate"></span></p>
