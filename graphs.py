@@ -357,9 +357,9 @@ def pmi(sheet_name):
     legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
     fig.add_shape(type='line', x0=pmi['Date'].iloc[0], x1=pmi['Date'].iloc[-1], y0=50, y1=50,
         line=dict(color='#ED1C26', width=3, dash='dot'))
-    fig.write_html("graph/{file_path}.html",config=config)
+    fig.write_html(f"graph/{sheet_name}.html",config=config)
 
-def confidence(sheet_name):
+def confidence(sheet_name,neutral=100):
     """
     Function
     ---------- 
@@ -381,12 +381,135 @@ def confidence(sheet_name):
     fig.update_layout(title={'text': "Indice de confiance des consommateurs",'x': 0.5,'xanchor': 'center'},xaxis_title='Date',template="simple_white",
         legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
     fig.add_shape(type='line', x0=confidence['Date'].iloc[0], x1=confidence['Date'].iloc[-1],
-              y0=100, y1=100,line=dict(color='#ED1C26', width=3, dash='dot'))
-    fig.write_html("graph/{file_path}.html",config=config)
+                  y0=neutral, y1=neutral,line=dict(color='#ED1C26', width=3, dash='dot'))
+    fig.write_html(f"graph/{sheet_name}.html",config=config)
+    
+def pe_ratio(sheet_name):
+    """
+    Function
+    ---------- 
+    Plot the historical PE ratio
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the historical PE ratio
+    """
+    pe=pd.read_excel(file_path,sheet_name=sheet_name)
+    pe=pe.iloc[:,[-2,-1]]
+    pe['Date']=pd.to_datetime(pe['Date'])
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=pe['Date'],y=pe['Calculated PE Ratio'],line_color='#00334E',name='P/E Ratio'))
+    fig.update_layout(title={'text': "Évolution du ratio P/E",'x': 0.5,'xanchor': 'center'},xaxis_title='Date',template="simple_white",
+        legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    quintiles = np.percentile(pe.iloc[:,-1], [20, 80])
+    for i,q in enumerate(quintiles):
+        if i == 0:
+                name='20th percentile'
+        else:
+                name='80th percentile'
+        
+        fig.add_trace(go.Scatter(x=[pe['Date'].min(), pe['Date'].max()], y=[q, q],
+        line_color='grey', mode='lines', line_dash='dash',name = name))
+    fig.write_html(f"graph/{sheet_name}.html",config=config)
+    
+def export_china():
+    """
+    Function
+    ---------- 
+    Plot the export
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the export
+    """
+    export=pd.read_excel(file_path,sheet_name="export_china")
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=export['Date'],y=export['VALUE'],line_color='#00334E',name='Exports'))
+    # add horizontal line
+    fig.update_layout(title={'text': "Exportations de la Chine (YoY)",'x': 0.5,'xanchor': 'center'},xaxis_title='Date',template="simple_white",
+    legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.write_html("graph/export_china.html",config=config)
     
     
+def cpi_china(start_date='1990-01-01',end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the consumer price index rate in the us
+    https://fred.stlouisfed.org/series/CPALTT01CNM659N
     
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
     
+    Returns
+    ------
+    plot the CPI in US
+    """
+    cpi=web.DataReader('CPALTT01CNM659N','fred', start=start_date, end=end_date)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=cpi.index, y=cpi['CPALTT01CNM659N'],line_color='#00334E', name='IPC'))
+    fig.update_layout(title={'text': 'Indice des prix à la consommation','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='IPC (%)',template="simple_white",
+                      legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.write_html("graph/cpi_china.html",config=config)
+    
+def cpi_cad(start_date='1990-01-01',end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the consumer price index rate in the us
+    https://fred.stlouisfed.org/series/CPALTT01CAM659N
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the CPI in US
+    """
+    cpi=web.DataReader('CPALTT01CAM659N','fred', start=start_date, end=end_date)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=cpi.index, y=cpi['CPALTT01CAM659N'],line_color='#00334E', name='IPC'))
+    fig.update_layout(title={'text': 'Indice des prix à la consommation','x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='IPC (%)',template="simple_white",
+                      legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.write_html("graph/cpi_cad.html",config=config)
+    
+def unrate_cad(start_date='1990-01-01',end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the unemployment rate in the us
+    https://fred.stlouisfed.org/series/LRUNTTTTCAM156S
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the unemployment rate in US
+    """
+    LRUNTTTTCAM156S=web.DataReader('LRUNTTTTCAM156S','fred', start=start_date, end=end_date)
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=LRUNTTTTCAM156S.index, y=LRUNTTTTCAM156S["LRUNTTTTCAM156S"], line_color='#00334E', name='Taux de chômage'))
+    fig.update_layout(title={'text': 'Taux de chômage','x': 0.5,'xanchor': 'center'}
+                      ,xaxis_title='Date',yaxis_title='Taux de chômage (%)',template="simple_white",
+                      legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.write_html("graph/unemployement_rate_cad.html",config=config)
     
     
     
@@ -407,12 +530,16 @@ if __name__ == "__main__":
     calculate_and_plot_volatility('^GSPC')
     pmi('pmi_us')
     confidence('confidence_us')
+    pe_ratio('pe_us')
     
     # Graphs for Canada page
     sp_tsx()
     calculate_and_plot_volatility('^GSPTSE')
     pmi('pmi_ca')
-    confidence('confidence_ca')
+    confidence('confidence_ca',neutral=50)
+    pe_ratio('pe_cad')
+    cpi_cad()
+    unrate_cad()
     
     
     # Graphs for China page
@@ -420,3 +547,6 @@ if __name__ == "__main__":
     calculate_and_plot_volatility('MCHI')
     pmi('pmi_china')
     confidence('confidence_china')
+    pe_ratio('pe_china')
+    export_china()
+    cpi_china()
