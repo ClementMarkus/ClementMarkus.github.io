@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard Canada</title>
+    <title>Dashboard Chine</title>
     <style>
         /* Define the styles for the header */
         .header {
@@ -151,9 +151,9 @@
     
     <div class="container">
         <div class="div">
-            <h1>Évolution du prix du S&P TSX</h1>
+            <h1>Évolution du prix de l'ETF MSCI China</h1>
             <div class="graph-container">
-                <iframe src="graph\sp_tsx.html" frameborder="O" width="800" height="600"></iframe>
+                <iframe src="graph\msci_china.html" frameborder="O" width="800" height="600"></iframe>
         </div>
         </div>
         <div class="div">
@@ -166,7 +166,7 @@
     const rssFeedDiv = document.getElementById('rss-feed');
 
     // RSS feed URL
-    const rssURL = 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100727362';
+    const rssURL = 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19832390';
 
     // Fetch the RSS feed
     fetch(rssURL)
@@ -238,7 +238,7 @@
     <div class="graph-container">
     <iframe src="graph\savings_us.html" frameborder="O" width="800" height="600"></iframe>
     <iframe src="graph\spreads_us.html" frameborder="O" width="800" height="600"></iframe>
-    <iframe src="graph\vix.html" frameborder="O" width="800" height="600"></iframe>
+    <iframe src="graph/china_vol.html" frameborder="O" width="800" height="600"></iframe>
 </div>
 <div class="currentDateContainer">
     <hr> <!-- Horizontal line -->

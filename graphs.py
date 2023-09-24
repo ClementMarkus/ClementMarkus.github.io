@@ -218,17 +218,17 @@ def sp_500(start_date='2019-01-01', end_date=dt.today()):
     ------
     plot S&P/TSX Composite Index
     """
-    df = yf.download('^GSPC', start_date , end_date,progress=False)
+    df = yf.download('MCHI', start_date , end_date,progress=False)
     df = df[['Adj Close']]
-    df = df.rename(columns={'Adj Close': '^GSPC'})
+    df = df.rename(columns={'Adj Close': 'MCHI'})
 
     # Create the figure
     fig = go.Figure()
-    ma30 = moving_average(df, 30,stock='^GSPC')
-    ma200 = moving_average(df, 200,stock='^GSPC')
+    ma30 = moving_average(df, 30,stock='MCHI')
+    ma200 = moving_average(df, 200,stock='MCHI')
 
     # Add the trace
-    fig.add_trace(go.Scatter(x=df.index, y=df["^GSPC"], line_color='#00334E',name="^GSPC"))
+    fig.add_trace(go.Scatter(x=df.index, y=df["MCHI"], line_color='#00334E',name="MCHI"))
     fig.add_trace(go.Scatter(x=ma30.index, y=ma30["MA30"], line_color='#ED1C26',name="MA30"))
     fig.add_trace(go.Scatter(x=ma200.index, y=ma200["MA200"], line_color='#5A9BD5',name="MA200"))
 
@@ -242,3 +242,44 @@ def sp_500(start_date='2019-01-01', end_date=dt.today()):
         template="simple_white"
     )
     fig.write_html("graph/sp_500.html",config=config)
+    
+def msci_china(start_date='2019-01-01', end_date=dt.today()):
+    """
+    Function
+    ---------- 
+    Plot with plotly the ajd close price of XIU.TO
+    
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot S&P/TSX Composite Index
+    """
+    df = yf.download('MCHI', start_date , end_date,progress=False)
+    df = df[['Adj Close']]
+    df = df.rename(columns={'Adj Close': 'MCHI'})
+
+    # Create the figure
+    fig = go.Figure()
+    ma30 = moving_average(df, 30,stock='MCHI')
+    ma200 = moving_average(df, 200,stock='MCHI')
+
+    # Add the trace
+    fig.add_trace(go.Scatter(x=df.index, y=df["MCHI"], line_color='#00334E',name="MCHI"))
+    fig.add_trace(go.Scatter(x=ma30.index, y=ma30["MA30"], line_color='#ED1C26',name="MA30"))
+    fig.add_trace(go.Scatter(x=ma200.index, y=ma200["MA200"], line_color='#5A9BD5',name="MA200"))
+
+    
+
+    # Update the layout
+    fig.update_layout(
+        #title={'text': "ETF d'actions canadiennes XIU",'x': 0.5,'xanchor': 'center'},
+        xaxis_title='Date',
+        yaxis_title="Prix ajusté",
+        template="simple_white"
+    )
+    fig.write_html("graph/msci_china.html",config=config)
