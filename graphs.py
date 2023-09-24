@@ -8,6 +8,8 @@ from scipy.stats import mstats
 import numpy as np
 from plotly.subplots import make_subplots
 
+file_path= r'C:\Users\Clement\OneDrive\Documents\dashboard_data.xlsx'
+
 config = {
   'toImageButtonOptions': {
     'format': 'png', # one of png, svg, jpeg, webp
@@ -332,9 +334,55 @@ def calculate_and_plot_volatility(symbol, start_date= "2000-01-01", end_date=dt.
     # Save the plot as an HTML file
     fig.write_html(f"graph/{symbol}_vol.html")
 
-
-
+def pmi(sheet_name):
+    """
+    Function
+    ---------- 
+    Plot the PMI index
     
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the Purchasing Managers Index
+    """
+    pmi=pd.read_excel(file_path,sheet_name=sheet_name)
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=pmi['Date'],y=pmi['VALUE'],line_color='#00334E',name='PMI'))
+    # add horizontal line
+    fig.update_layout(title={'text': "Purchasing Managers' Index (PMI)",'x': 0.5,'xanchor': 'center'},xaxis_title='Date',yaxis_title='PMI (%)',template="simple_white",
+    legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.add_shape(type='line', x0=pmi['Date'].iloc[0], x1=pmi['Date'].iloc[-1], y0=50, y1=50,
+        line=dict(color='#ED1C26', width=3, dash='dot'))
+    fig.write_html("graph/{file_path}.html",config=config)
+
+def confidence(sheet_name):
+    """
+    Function
+    ---------- 
+    Plot the confidence index
+    
+    Parameters
+    ----------
+    start_date: start date of you're plot
+    end_date: end date of you're plot
+    
+    Returns
+    ------
+    plot the confidence index
+    """
+    confidence=pd.read_excel(file_path,sheet_name=sheet_name)
+    fig=go.Figure()
+    fig.add_trace(go.Scatter(x=confidence['Date'],y=confidence['VALUE'],line_color='#00334E',name='confidence'))
+    # add horizontal line
+    fig.update_layout(title={'text': "Indice de confiance des consommateurs",'x': 0.5,'xanchor': 'center'},xaxis_title='Date',template="simple_white",
+        legend=dict(x=0, y=-0.2, orientation='h', bgcolor='rgba(255, 255, 255, 0)'))
+    fig.add_shape(type='line', x0=confidence['Date'].iloc[0], x1=confidence['Date'].iloc[-1],
+              y0=100, y1=100,line=dict(color='#ED1C26', width=3, dash='dot'))
+    fig.write_html("graph/{file_path}.html",config=config)
     
     
     
@@ -357,13 +405,18 @@ if __name__ == "__main__":
     savings_usa()
     sp_500()
     calculate_and_plot_volatility('^GSPC')
+    pmi('pmi_us')
+    confidence('confidence_us')
     
     # Graphs for Canada page
     sp_tsx()
     calculate_and_plot_volatility('^GSPTSE')
-    
+    pmi('pmi_ca')
+    confidence('confidence_ca')
     
     
     # Graphs for China page
     msci_china()
     calculate_and_plot_volatility('MCHI')
+    pmi('pmi_china')
+    confidence('confidence_china')
