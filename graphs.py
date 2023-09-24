@@ -3,8 +3,9 @@ import pandas_datareader.data as web
 import yfinance as yf
 from datetime import date as dt 
 import plotly.graph_objs as go
-import matplotlib.pyplot as plt
-from dash import dash_table
+from arch import arch_model
+from scipy.stats import mstats
+import numpy as np
 from plotly.subplots import make_subplots
 
 config = {
@@ -218,17 +219,17 @@ def sp_500(start_date='2019-01-01', end_date=dt.today()):
     ------
     plot S&P/TSX Composite Index
     """
-    df = yf.download('MCHI', start_date , end_date,progress=False)
+    df = yf.download('^GSPC', start_date , end_date,progress=False)
     df = df[['Adj Close']]
-    df = df.rename(columns={'Adj Close': 'MCHI'})
+    df = df.rename(columns={'Adj Close': '^GSPC'})
 
     # Create the figure
     fig = go.Figure()
-    ma30 = moving_average(df, 30,stock='MCHI')
-    ma200 = moving_average(df, 200,stock='MCHI')
+    ma30 = moving_average(df, 30,stock='^GSPC')
+    ma200 = moving_average(df, 200,stock='^GSPC')
 
     # Add the trace
-    fig.add_trace(go.Scatter(x=df.index, y=df["MCHI"], line_color='#00334E',name="MCHI"))
+    fig.add_trace(go.Scatter(x=df.index, y=df["^GSPC"], line_color='#00334E',name="^GSPC"))
     fig.add_trace(go.Scatter(x=ma30.index, y=ma30["MA30"], line_color='#ED1C26',name="MA30"))
     fig.add_trace(go.Scatter(x=ma200.index, y=ma200["MA200"], line_color='#5A9BD5',name="MA200"))
 
@@ -283,3 +284,86 @@ def msci_china(start_date='2019-01-01', end_date=dt.today()):
         template="simple_white"
     )
     fig.write_html("graph/msci_china.html",config=config)
+    
+def calculate_and_plot_volatility(symbol, start_date= "2000-01-01", end_date=dt.today(), winsorize_limits=[0.05, 0.05], window_size=1000):
+    # Download data
+    df_prix = yf.download(symbol, start_date, end_date, progress=False)
+    df_prix = df_prix[['Adj Close']]
+    df_prix = df_prix.rename(columns={'Adj Close': symbol})
+    df = df_prix.pct_change().dropna()
+
+    # Calculate forecasted volatility
+    returns = df[symbol].values * 100
+    winsorized_returns = mstats.winsorize(returns, limits=winsorize_limits)
+
+    forecasts_std = []
+    for i in range(window_size, len(returns)):
+        window = winsorized_returns[i - window_size:i]
+        model = arch_model(window, vol='GARCH', p=1, q=1).fit(disp='off')
+        forecast = model.forecast(horizon=1, reindex=False)
+        forecasts_std.append(np.sqrt(forecast.variance.values[-1, -1]))
+    forecasts_std = pd.DataFrame(forecasts_std, index=df.index[window_size:])
+    forecasts_std.index.name = 'Date'
+
+    df_prix = df_prix.iloc[window_size+1:]
+    # Create the plot
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[0.7, 0.3])
+
+    returns_trace = go.Scatter(x=df_prix.index, y=df_prix[symbol], line_color='#00334E', name='Prix')
+    fig.add_trace(returns_trace, row=1, col=1)
+
+    volatility_trace = go.Scatter(x=forecasts_std.index, y=forecasts_std.iloc[:,0], line_color='#ED1C26', name='Volatilité prévue')
+    fig.add_trace(volatility_trace, row=2, col=1)
+
+    # Set axis labels and titles
+    fig.update_xaxes(title_text="Date", row=2, col=1)
+    fig.update_yaxes(title_text="Prix", row=1, col=1)
+    fig.update_yaxes(title_text="Volatilité prévue", row=2, col=1)
+
+    # Configure layout
+    fig.update_layout(title={'text': f"Prix de l'actif vs volatilité prévue", 'x': 0.5, 'xanchor': 'center'},
+                      template="simple_white", showlegend=False)
+
+    quintiles = np.percentile(forecasts_std.iloc[:,0], [20, 80])
+    for q in quintiles:
+        fig.add_trace(go.Scatter(x=[forecasts_std.index.min(), forecasts_std.index.max()], y=[q, q],
+                                 line_color='grey', mode='lines', line_dash='dash'), row=2, col=1)
+
+    # Save the plot as an HTML file
+    fig.write_html(f"graph/{symbol}_vol.html")
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+if __name__ == "__main__":
+    # Graphs for USA page
+    unrate_usa()
+    cpi_usa()
+    fedfunds_usa()
+    vix()
+    spreads_usa()
+    savings_usa()
+    sp_500()
+    calculate_and_plot_volatility('^GSPC')
+    
+    # Graphs for Canada page
+    sp_tsx()
+    calculate_and_plot_volatility('^GSPTSE')
+    
+    
+    
+    # Graphs for China page
+    msci_china()
+    calculate_and_plot_volatility('MCHI')
