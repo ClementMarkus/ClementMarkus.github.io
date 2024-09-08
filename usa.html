@@ -1,34 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Dashboard USA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Canada</title>
     <style>
         /* Define the styles for the header */
         .header {
-            background-color: #00334E;
+            background-color: #7f7f806d;
             text-align: center;
             padding: 10px;
-            color: white;
+            color: black;
             font-size: 30px;
+            border-radius: 100px; /* Rounded corners */
+            margin-bottom: 10px; /* Add space below header */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
         }
 
         /* Style the "Dashboard" section */
         .dashboard-section {
-            background-color: #00334E;
+            background-color: white;
             padding: 10px;
             text-align: center;
+            border-radius: 20px; /* Rounded corners */
         }
 
         /* Style the buttons */
         .button-container {
             text-align: center;
-            margin-top: px;
+            margin-top: 10px;
         }
 
         .button {
             background-color: white; 
             border: none; 
-            color: #00334E; 
+            color: black; 
             padding: 10px 20px;
             text-align: center;
             text-decoration: none;
@@ -36,100 +42,129 @@
             font-size: 16px;
             cursor: pointer;
             border-radius: 20px; /* Rounded corners */
-            margin-right: 20px; /* Add some space between buttons */
-            transition: background-color 0.3s ease;
+            margin-right: 10px; /* Add some space between buttons */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .button:hover {
-            background-color: #888888; /* Darker green when hovered */
-            color: white;
+            background-color: #7f7f806d; /* Darker green when hovered */
+            color: black;
+            font-weight: bold;
         }
 
-        /* Style the graph container */
-        .graph-container {
-            margin-top: 1px;
-            background-color: white; /* Gray background for the graph */
-            padding: 1px;
+        /* Style for the flex container */
+        .flex-container {
             display: flex;
-            flex-direction: row;
+            justify-content: center; /* Center horizontally */
+            margin: 10px auto; /* Center with margin */
+            width: 98%; /* Limit the total width */
+            gap: 20px; /* Add space between sections */
         }
-        .h1{
-            color: white;
-            background-color: #00334E;
-            font-size: 10px;
-            font-weight: bold;
-            align-items: center;
-            text-align: center;
-            padding: 1px;
-    
+
+        .section {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #7f7f806d; /* Gray border */
+            border-radius: 20px; /* Rounded corners */
+            margin: 10px auto; /* Center with margin */
+            width: 45%; /* Center and limit width */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            text-align: left; /* Left-align text */
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
         }
-        .currentDateContainer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+
+        .section h2 {
+            margin-top: 0; /* Remove any default margin */
+            margin-bottom: 10px; /* Adjust as needed */
+        }
+
+        .section p {
+            margin-top: 10px; /* Adjust as needed to move text higher */
+        }
+
+        .section iframe {
             width: 100%;
-            background-color: #f0f0f0;
-            padding: 1px;
+            height: 400px; /* Adjust height as needed */
+            border: none; /* Remove border */
+            flex-grow: 1; /* Make iframe take remaining space */
+        }
+
+        .section2 {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #7f7f806d; /* Remove gray border */
+            border-radius: 20px; /* Rounded corners */
+            margin: 10px auto; /* Center with margin */
+            width: 96%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            position: relative; /* For navigation buttons */
+            overflow: hidden; /* Hide overflow for carousel effect */
+        }
+
+        .section2 h2 {
+            margin-top: 0; /* Remove any default margin */
+            margin-bottom: 10px; /* Adjust as needed */
+        }
+
+        .iframe-container {
+            display: flex;
+            gap: 10px; /* Add space between iframes */
+            overflow-x: scroll; /* Enable horizontal scrolling */
+            scroll-behavior: smooth; /* Smooth scrolling */
+            padding-bottom: 10px; /* Add space for scrollbar */
+        }
+
+        .iframe-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for aesthetic purposes */
+        }
+
+        .iframe-container iframe {
+            flex: 0 0 33.33%; /* Set fixed width for each iframe */
+            height: 400px; /* Adjust height as needed */
+            border: none; /* Remove border */
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure buttons appear above iframes */
+        }
+
+        .nav-button.left {
+            left: 10px;
+        }
+
+        .nav-button.right {
+            right: 10px;
+        }
+
+        .dot-container {
             text-align: center;
-        }
-        .container {
-            display: flex; /* Use flexbox to arrange the divs side by side */
+            margin-top: 10px;
         }
 
-        /* Style for each individual div */
-        .div {
-            width: 50%;
-            padding: 1px;
-            border: 1px solid #ccc; /* Add a border for visual separation */
-            color: white;
-            background-color: #00334E;
-            font-size: 10px;
-            font-weight: bold;
-            align-items: center;
-            text-align: center;
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s ease;
         }
-        .modern-news-feed {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        justify-content: space-between;
-        background-color: white;
-        padding: 10px;
-        overflow-y: auto;
-        max-height: 582px;
-        
-    }
 
-    .news-item {
-        width: calc(50% - 5px); /* Adjust the width as needed for your layout */
-        background-color: #00334E;
-        padding: 1px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .news-image img {
-        max-width: 100%;
-        height: auto;
-    }
-
-    .news-title {
-        font-weight: bold;
-        margin-top: 1px;
-        font-size: 12px;
-    }
-
-    .news-link {
-        color: #0078D4;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 1px;
-    }
-
-    .news-link:hover {
-        text-decoration: underline;
-    }
+        .dot.active {
+            background-color: #7f7f806d;
+        }
     </style>
 </head>
 <body>
@@ -142,114 +177,61 @@
     <div class="dashboard-section">
         <!-- Button container -->
         <div class="button-container">
-            <button class="button" onclick="location.href='index.html';">Canada</button>
-            <button class="button" onclick="location.href='usa.html';">USA</button>
-            <button class="button" onclick="location.href='chine.html';">Chine</button>
+            <button class="button" onclick="location.href='index1.html';">Asset Classes Returns</button>
+            <button class="button" onclick="location.href='index1.html';">Sectors returns</button>
+            <button class="button" onclick="location.href='index1.html';">Factors returns</button>
+            <button class="button" onclick="location.href='index1.html';">Strategic Asset Allocation</button>
+            <button class="button" onclick="location.href='index1.html';">Tactical Asset Allocation</button>
         </div>
-    </div>
-    <hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
+
+        <!-- Flex container for sections -->
+        <div class="flex-container">
+            <!-- Section with static content -->
+            <div class="section">
+                <h2>Value of a $10,000 invested based on the time period</h2>
+                <iframe src="graph/sp_500.html"></iframe>
+            </div>
     
-    <div class="container">
-        <div class="div">
-            <h1>Évolution du prix du S&P 500</h1>
-            <div class="graph-container">
-                <iframe src="graph\sp_500.html" frameborder="O" width="800" height="600"></iframe>
+            <!-- Section with asset classes returns -->
+            <div class="section">
+                <h2>Asset Classes Returns</h2>
+                <iframe src="graph/pe_us.html"></iframe>
+            </div>
         </div>
+
+        <!-- Section with economic indicators carousel -->
+        <div class="flex-container">
+            <div class="section2">
+                <h2>Economic Indicators</h2>
+                <div class="iframe-container" id="iframe-container">
+                    <!-- Ajouter les images ici -->
+                    <iframe src="graph/vix.html"></iframe>
+                    <iframe src="graph/pmi_us.html"></iframe>
+                    <iframe src="graph/cpi_us.html"></iframe>
+                    <iframe src="graph/confidence_us.html"></iframe>
+                    <iframe src="graph/fedfunds_us.html"></iframe>
+                </div>
+                <button class="nav-button left" onclick="scrollLeft()">&#8249;</button>
+                <button class="nav-button right" onclick="scrollRight()">&#8250;</button>
+                <div class="dot-container" id="dot-container">
+                    <!-- Ajouter les points indicatifs ici -->
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
         </div>
-        <div class="div">
-            <h1>Nouvelles économiques</h1>
-            <div id="rss-feed" class="modern-news-feed"></div>
     </div>
-</div>
-<script>
-    // Get a reference to the div where you want to display the RSS feed
-    const rssFeedDiv = document.getElementById('rss-feed');
 
-    // RSS feed URL
-    const rssURL = 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15837362';
+    <!-- JavaScript pour le défilement et la navigation par points -->
+    <script>
+        const container = document.getElementById('iframe-container');
+        const dots = document.getElementsByClassName('dot');
+        const numDots = Math.ceil(container.children.length / 3); // Calculer le nombre de points en fonction du nombre d'éléments dans le carrousel
 
-    // Fetch the RSS feed
-    fetch(rssURL)
-        .then(response => response.text())
-        .then(data => {
-            // Parse the XML data
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data, 'text/xml');
-
-            // Extract and display the relevant information from the RSS feed
-            const items = xmlDoc.querySelectorAll('item');
-            items.forEach(item => {
-                const title = item.querySelector('title').textContent;
-                const link = item.querySelector('link').textContent;
-                const description = item.querySelector('description').textContent;
-                const imgTag = description.match(/<img[^>]+>/i); // Extract the image tag
-
-                // Create a news item element
-                const newsItem = document.createElement('div');
-                newsItem.classList.add('news-item');
-
-                // Create an image element
-                const newsImage = document.createElement('div');
-                newsImage.classList.add('news-image');
-                if (imgTag) {
-                    // Extract the image source from the image tag
-                    const imgSrc = imgTag[0].match(/src="([^"]+)"/i);
-                    if (imgSrc && imgSrc[1]) {
-                        const img = document.createElement('img');
-                        img.src = imgSrc[1];
-                        newsImage.appendChild(img);
-                    }
-                }
-
-                // Create a title element
-                const newsTitle = document.createElement('div');
-                newsTitle.classList.add('news-title');
-                newsTitle.textContent = title;
-
-                // Create a link element
-                const newsLink = document.createElement('a');
-                newsLink.classList.add('news-link');
-                newsLink.textContent = 'Read more';
-                newsLink.href = link;
-                newsLink.target = '_blank';
-
-                // Append image, title, and link to the news item
-                newsItem.appendChild(newsImage);
-                newsItem.appendChild(newsTitle);
-                newsItem.appendChild(newsLink);
-
-                // Append the news item to the RSS feed container
-                rssFeedDiv.appendChild(newsItem);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching the RSS feed:', error);
-        });
-</script>
-<hr style="background-color: white; height: 10px; border: none; margin-top: 1px; margin-bottom: 1px;">
-    <div class="h1"> 
-    <h1>Données Macroéconomiques</h1>
-</div>
-    <div class="graph-container">
-    <iframe src="graph\unemployement_rate_us.html" frameborder="O" width="800" height="600"></iframe>
-    <iframe src="graph\cpi_us.html" frameborder="O" width="800" height="600"></iframe>
-    <iframe src="graph\pe_us.html" frameborder="O" width="800" height="600"></iframe>
-</div>
-    <div class="graph-container">
-    <iframe src="graph\confidence_us.html" frameborder="O" width="800" height="600"></iframe>
-    <iframe src="graph\pmi_us.html" frameborder="O" width="800" height="600"></iframe>
-    <iframe src="graph\^GSPC_vol.html" frameborder="O" width="800" height="600"></iframe>
-</div>
-<div class="currentDateContainer">
-    <hr> <!-- Horizontal line -->
-    <p>Last updated: <span id="currentDate"></span></p>
-    </div>
-        <script>
-            // JavaScript code to get the current date and time
-            var currentDateElement = document.getElementById("currentDate");
-            var currentDate = new Date();
-            var options = { year: 'numeric', month: 'long', day: 'numeric' };
-            currentDateElement.innerHTML = currentDate.toLocaleDateString('en-US', options);
-        </script>
-</body>
-</html>
+        // Fonction de mise à jour des points en fonction de la position de défilement
+        function updateDots() {
+            const scrollLeft = container.scrollLeft;
+            const totalWidth = container.scrollWidth - container.clientWidth;
+            const currentDot = Math.round((scrollLeft / totalWidth) * (numDots - 1));
+            for (let i = 0; i < dots
