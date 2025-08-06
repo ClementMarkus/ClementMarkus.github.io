@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Canada</title>
-    <style>
+/* Define the styles for the header */
         /* Define the styles for the header */
         .header {
             background-color: #7f7f806d;
@@ -165,32 +159,58 @@
         .dot.active {
             background-color: #7f7f806d;
         }
-    </style>
-</head>
-<body>
-    <!-- Create the header with the text "Dashboard" -->
-    <div class="header">
-        <strong>Dashboard</strong>
-    </div>
-
-    <!-- "Dashboard" section -->
-    <div class="dashboard-section">
-        <!-- Button container -->
-        <div class="button-container">
-            <button class="button" onclick="location.href='index1.html';">Asset Classes Returns</button>
-            <button class="button" onclick="location.href='index1.html';">Sectors returns</button>
-            <button class="button" onclick="location.href='index1.html';">Factors returns</button>
-            <button class="button" onclick="location.href='index1.html';">Strategic Asset Allocation</button>
-            <button class="button" onclick="location.href='index1.html';">Tactical Asset Allocation</button>
-        </div>
-
-        <!-- Flex container for sections -->
-        <div class="section2">
-            <iframe src="https://calculatrices-financieres.ca" frameborder="0" height="600" width="60%"></iframe>
-        </div>
-        <footer>
-            � 2024 Calculateur Hypothécaire | Créé avec soin pour vos besoins financiers.
-        </footer>
-    </div>
-</body>
-
+        .tool-grid {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 20px;
+          margin-top: 30px;
+        }
+    
+        .tool-card {
+          background-color: white;
+          border: 2px solid #7f7f806d;
+          border-radius: 20px;
+          padding: 30px;
+          width: 280px;
+          text-align: center;
+          text-decoration: none;
+          color: black;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+    
+        .tool-card:hover {
+          background-color: #f0f0f0;
+          transform: translateY(-5px);
+          font-weight: bold;
+        }
+    
+        .tool-card h3 {
+          margin-top: 10px;
+          margin-bottom: 10px;
+        }
+    
+        .tool-card p {
+          font-size: 14px;
+          color: #555;
+        }
+    
+        .header {
+          background-color: #7f7f806d;
+          text-align: center;
+          padding: 20px;
+          font-size: 30px;
+          font-weight: bold;
+          border-radius: 0 0 40px 40px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        footer {
+          text-align: center;
+          margin-top: 50px;
+          padding: 20px;
+          background-color: #eaeaea;
+          border-top: 1px solid #ccc;
+          font-size: 14px;
+        }

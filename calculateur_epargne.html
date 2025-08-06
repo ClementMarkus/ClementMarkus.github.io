@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Outil - Simulation d'investissement</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .input-row {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+    .resultat {
+      font-size: 18px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    canvas {
+      max-width: 100%;
+      margin-top: 30px;
+    }
+    .retour-btn {
+      margin-top: 30px;
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #7f7f806d;
+      color: black;
+      text-decoration: none;
+      border-radius: 20px;
+      transition: background-color 0.3s ease;
+    }
+    .retour-btn:hover {
+      background-color: #5f5f605d;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <strong>Simulation d'investissement</strong>
+  </div>
+  <div class="button-container">
+    <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
+  </div>
+
+  <div class="dashboard-section">
+    <div class="section">
+      <form id="formulaire-investissement">
+        <div class="input-row">
+          <label for="nom">Nom du client :</label>
+          <input type="text" id="nom" required />
+        </div>
+
+        <div class="input-row">
+          <label for="montant-initial">Montant initial ($) :</label>
+          <input type="number" id="montant-initial" value="10000" required />
+        </div>
+
+        <div class="input-row">
+          <label for="contribution">Contribution périodique ($) :</label>
+          <input type="number" id="contribution" value="500" required />
+        </div>
+
+        <div class="input-row">
+          <label for="rendement">Rendement annuel moyen (%) :</label>
+          <input type="number" id="rendement" value="6" required />
+        </div>
+
+        <div class="input-row">
+          <label for="frequence">Fréquence des contributions :</label>
+          <select id="frequence">
+            <option value="weekly">Hebdomadaire</option>
+            <option value="biweekly">Aux deux semaines</option>
+            <option value="monthly" selected>Mensuelle</option>
+            <option value="semiannual">Semestrielle</option>
+            <option value="annual">Annuelle</option>
+          </select>
+        </div>
+
+        <div class="input-row">
+          <label for="duree">Durée (années) :</label>
+          <input type="number" id="duree" value="10" required />
+        </div>
+
+        <button type="button" class="button" onclick="simuler(false)">Calculer</button>
+        <button type="button" class="button" onclick="simuler(true)">Télécharger PDF</button>
+      </form>
+
+      <div class="resultat" id="resultat-valeur"></div>
+      <canvas id="graphique"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    📈 2024 Outil d'investissement | Développé par Clement Markus.
+  </footer>
+
+  <script>
+    async function simuler(generePDF) {
+      const nom = document.getElementById("nom").value;
+      const montantInitial = parseFloat(document.getElementById("montant-initial").value);
+      const contribution = parseFloat(document.getElementById("contribution").value);
+      const rendement = parseFloat(document.getElementById("rendement").value) / 100;
+      const frequence = document.getElementById("frequence").value;
+      const duree = parseInt(document.getElementById("duree").value);
+
+      const frequenceMap = {
+        weekly: 52,
+        biweekly: 26,
+        monthly: 12,
+        semiannual: 2,
+        annual: 1
+      };
+
+      const periodesParAn = frequenceMap[frequence];
+      const totalPeriodes = duree * periodesParAn;
+      const rendementParPeriode = Math.pow(1 + rendement, 1 / periodesParAn) - 1;
+
+      let montant = montantInitial;
+      const valeurs = [];
+      const labels = [];
+
+      for (let i = 0; i <= totalPeriodes; i++) {
+        if (i % periodesParAn === 0) {
+          valeurs.push(montant);
+          labels.push("Année " + (i / periodesParAn));
+        }
+        montant = (montant + contribution) * (1 + rendementParPeriode);
+      }
+
+      const ctx = document.getElementById("graphique").getContext("2d");
+      if (window.chartInstance) window.chartInstance.destroy();
+      window.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Valeur accumulée',
+            data: valeurs,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0,0,255,0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: {
+              display: true,
+              text: 'Évolution de l’investissement'
+            }
+          }
+        }
+      });
+
+      const valeurFinale = valeurs[valeurs.length - 1];
+      document.getElementById("resultat-valeur").innerText = `Valeur projetée après ${duree} ans : ${valeurFinale.toLocaleString()} $`;
+
+      if (!generePDF) return;
+
+      await new Promise(r => setTimeout(r, 500));
+      const image = document.getElementById("graphique").toDataURL("image/png");
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text("Simulation d’investissement", 10, 10);
+      doc.setFontSize(12);
+      doc.text(`Nom du client : ${nom}`, 10, 20);
+      doc.text(`Montant initial : ${montantInitial.toLocaleString()} $`, 10, 30);
+      doc.text(`Contribution : ${contribution.toLocaleString()} $ / ${document.querySelector("#frequence option:checked").text}`, 10, 40);
+      doc.text(`Durée : ${duree} ans`, 10, 50);
+      doc.text(`Rendement annuel : ${(rendement * 100).toFixed(2)} %`, 10, 60);
+      doc.text(`Valeur projetée après ${duree} ans : ${valeurFinale.toLocaleString()} $`, 10, 70);
+      doc.addImage(image, 'PNG', 10, 80, 180, 80);
+
+      doc.setFontSize(10);
+      doc.text("Préparé par Clement Markus", 10, 170);
+
+      doc.save(`Simulation_${nom.replace(/\s+/g, '_')}.pdf`);
+    }
+  </script>
+</body>
+</html>
