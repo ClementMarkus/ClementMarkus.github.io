@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Calcul d'impôt — Résumé</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
     body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f6f7fb; color:#111;}
     .container{max-width:980px;margin:28px auto;padding:20px}
@@ -13,96 +15,123 @@
     .card{background:#fff;border-radius:16px;padding:18px;margin-top:18px;box-shadow:0 8px 30px rgba(20,20,45,0.05)}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
     .table-compact{width:100%;border-collapse:collapse;font-size:15px}
-    .table-compact th{background:#f4f6fb;padding:12px;border-radius:8px 8px 0 0;text-align:left;color:#1b2749}
+    .table-compact th{background:#f4f6fb;padding:12px;text-align:left;color:#1b2749}
     .table-compact td{padding:12px;border-top:1px solid #eef1fb}
     .label{color:#556;font-weight:600}
     .value{font-weight:700;color:#0b3b66}
-    .full-width{grid-column:1 / -1}
+    .button-container{display:flex;gap:10px;margin:15px 0;}
+    .button{padding:10px 16px;border-radius:12px;border:none;background:#0b5cff;color:white;cursor:pointer}
+    .button-secondary{padding:10px 16px;border-radius:12px;border:1px solid #ccc;background:white;cursor:pointer}
     @media (max-width:820px){.grid{grid-template-columns:1fr}.table-compact th,.table-compact td{font-size:14px}}
   </style>
-    <style>
-      .input-row {
-        margin-bottom: 15px;
-      }
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-      }
-      input, select {
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        width: 100%;
-      }
-      .resultat {
-        font-size: 18px;
-        margin-top: 20px;
-        font-weight: bold;
-      }
-      canvas {
-        max-width: 100%;
-        margin-top: 30px;
-      }
-      .retour-btn {
-        margin-top: 30px;
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #7f7f806d;
-        color: black;
-        text-decoration: none;
-        border-radius: 20px;
-        transition: background-color 0.3s ease;
-      }
-      .retour-btn:hover {
-        background-color: #5f5f605d;
-      }
-    </style>
 </head>
 <body>
   <div class="header">
     <strong>Calculateur d'impôt</strong>
   </div>
-  <div class="button-container">
-    <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
-  </div>
-  <div class="card">
-    <label class="label">Revenu imposable ($)</label>
-    <input id="revenu" type="number" value="50000" style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8edf7;margin-bottom:12px">
-    <button onclick="calculerImpots()" style="padding:10px 16px;border-radius:12px;border:none;background:#0b5cff;color:white;cursor:pointer">Calculer</button>
-    <div class="grid" style="margin-top:18px">
-      <div class="card">
-        <table class="table-compact">
-          <thead><tr><th colspan="2">Résumé</th></tr></thead>
-          <tbody>
-            <tr><td class="label">Impôt sur le revenu</td><td class="value" id="impot-total">—</td></tr>
-            <tr><td class="label">Revenu net</td><td class="value" id="revenu-net">—</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card">
-        <table class="table-compact">
-          <thead><tr><th colspan="2">Taux d'imposition</th></tr></thead>
-          <tbody>
-            <tr><td class="label">Taux moyen</td><td class="value" id="taux-moyen">—</td></tr>
-            <tr><td class="label">Taux marginal</td><td class="value" id="taux-marginal">—</td></tr>
-            <tr><td class="label">Dividendes déterminés</td><td class="value" id="taux-div-det">—</td></tr>
-            <tr><td class="label">Gains en capital</td><td class="value" id="taux-gc">—</td></tr>
-          </tbody>
-        </table>
+  <div class="container">
+    <div class="button-container">
+      <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
+    </div>
+
+    <div class="card">
+      <label class="label">Nom du client</label>
+      <input id="nom" type="text" placeholder="Ex: Jean Tremblay" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;margin-bottom:12px">
+
+      <label class="label">Revenu imposable ($)</label>
+      <input id="revenu" type="number" value="50000" style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8edf7;margin-bottom:12px">
+      <button onclick="calculerImpots()" class="button">Calculer</button>
+      <button class="button" onclick="telechargerPDF()">📄 Télécharger PDF</button>
+
+      <div class="grid" style="margin-top:18px">
+        <div class="card">
+          <table class="table-compact">
+            <thead><tr><th colspan="2">Résumé</th></tr></thead>
+            <tbody>
+              <tr><td class="label">Impôt sur le revenu</td><td class="value" id="impot-total">—</td></tr>
+              <tr><td class="label">Revenu net</td><td class="value" id="revenu-net">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <table class="table-compact">
+            <thead><tr><th colspan="2">Taux d'imposition</th></tr></thead>
+            <tbody>
+              <tr><td class="label">Taux moyen</td><td class="value" id="taux-moyen">—</td></tr>
+              <tr><td class="label">Taux marginal</td><td class="value" id="taux-marginal">—</td></tr>
+              <tr><td class="label">Dividendes déterminés</td><td class="value" id="taux-div-det">—</td></tr>
+              <tr><td class="label">Gains en capital</td><td class="value" id="taux-gc">—</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
 <script>
 const paliersFed=[{min:0,max:16128.99,taux:0},{min:16129,max:57374.99,taux:0.1211},{min:57375,max:114749.99,taux:0.1712},{min:114750,max:177881.99,taux:0.2171},{min:177882,max:253413.99,taux:0.2422},{min:253414,max:Infinity,taux:0.2756}];
 const paliersQc=[{min:0,max:18570.99,taux:0},{min:18571,max:53254.99,taux:0.14},{min:53255,max:106494.99,taux:0.19},{min:106495,max:129589.99,taux:0.24},{min:129590,max:Infinity,taux:0.2575}];
+
 function impotProgressif(r,paliers){let imp=0;for(const pl of paliers){if(r>pl.min){const tx=Math.min(r,pl.max)-pl.min;if(tx>0)imp+=tx*pl.taux}}return imp;}
 function tauxMarginalCombine(r){return paliersFed.find(p=>r<=p.max).taux+paliersQc.find(p=>r<=p.max).taux;}
 const settings={det:{grossUp:1.38,fedCredit:0.1502,qcCredit:0.1170}};
-function tauxDividendeTMI(r){const cfg=settings.det,d=1000,gross=d*cfg.grossUp;let fB=impotProgressif(r,paliersFed),fA=impotProgressif(r+gross,paliersFed),fNet=Math.max(0,(fA-fB)-gross*cfg.fedCredit);let qB=impotProgressif(r,paliersQc),qA=impotProgressif(r+gross,paliersQc),qNet=Math.max(0,(qA-qB)-gross*cfg.qcCredit);return((fNet+qNet)/d)*100;}
-function tauxGainEnCapital(r){const d=1000,taxable=d*0.5,b=impotProgressif(r,paliersFed)+impotProgressif(r,paliersQc),a=impotProgressif(r+taxable,paliersFed)+impotProgressif(r+taxable,paliersQc);return((a-b)/d)*100;}
-function calculerImpots(){const r=Number(document.getElementById('revenu').value)||0,f=impotProgressif(r,paliersFed),q=impotProgressif(r,paliersQc),tot=f+q,net=r-tot;document.getElementById('impot-total').textContent=tot.toLocaleString(undefined,{maximumFractionDigits:2})+' $';document.getElementById('revenu-net').textContent=net.toLocaleString(undefined,{maximumFractionDigits:2})+' $';document.getElementById('taux-moyen').textContent=((tot/r)*100).toFixed(2)+' %';document.getElementById('taux-marginal').textContent=(tauxMarginalCombine(r)*100).toFixed(2)+' %';document.getElementById('taux-div-det').textContent=tauxDividendeTMI(r).toFixed(2)+' %';document.getElementById('taux-gc').textContent=tauxGainEnCapital(r).toFixed(2)+' %';}
+
+function tauxDividendeTMI(r){const cfg=settings.det,d=1000,gross=d*cfg.grossUp;
+  let fB=impotProgressif(r,paliersFed),fA=impotProgressif(r+gross,paliersFed),fNet=Math.max(0,(fA-fB)-gross*cfg.fedCredit);
+  let qB=impotProgressif(r,paliersQc),qA=impotProgressif(r+gross,paliersQc),qNet=Math.max(0,(qA-qB)-gross*cfg.qcCredit);
+  return((fNet+qNet)/d)*100;
+}
+function tauxGainEnCapital(r){const d=1000,taxable=d*0.5,b=impotProgressif(r,paliersFed)+impotProgressif(r,paliersQc),
+  a=impotProgressif(r+taxable,paliersFed)+impotProgressif(r+taxable,paliersQc);
+  return((a-b)/d)*100;
+}
+
+function calculerImpots(){
+  const r=Number(document.getElementById('revenu').value)||0;
+  const f=impotProgressif(r,paliersFed),q=impotProgressif(r,paliersQc),tot=f+q,net=r-tot;
+  document.getElementById('impot-total').textContent=tot.toLocaleString(undefined,{maximumFractionDigits:2})+' $';
+  document.getElementById('revenu-net').textContent=net.toLocaleString(undefined,{maximumFractionDigits:2})+' $';
+  document.getElementById('taux-moyen').textContent=((tot/r)*100).toFixed(2)+' %';
+  document.getElementById('taux-marginal').textContent=(tauxMarginalCombine(r)*100).toFixed(2)+' %';
+  document.getElementById('taux-div-det').textContent=tauxDividendeTMI(r).toFixed(2)+' %';
+  document.getElementById('taux-gc').textContent=tauxGainEnCapital(r).toFixed(2)+' %';
+}
+
+function telechargerPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const nom = document.getElementById('nom').value || "—";
+  const revenu = document.getElementById('revenu').value || "—";
+
+  const data = [
+    ["Impôt sur le revenu", document.getElementById('impot-total').textContent],
+    ["Revenu net", document.getElementById('revenu-net').textContent],
+    ["Taux moyen", document.getElementById('taux-moyen').textContent],
+    ["Taux marginal", document.getElementById('taux-marginal').textContent],
+    ["Dividendes déterminés", document.getElementById('taux-div-det').textContent],
+    ["Gains en capital", document.getElementById('taux-gc').textContent]
+  ];
+
+  doc.setFontSize(16);
+  doc.text("Rapport de calcul d'impôt", 14, 15);
+  doc.setFontSize(11);
+  doc.text("Date : " + new Date().toLocaleDateString(), 14, 22);
+  doc.text("Client : " + nom, 14, 28);
+  doc.text("Revenu imposable : " + revenu + " $", 14, 34);
+
+  doc.autoTable({
+    startY: 40,
+    head: [["Détail", "Valeur"]],
+    body: data,
+    styles: { fontSize: 11 },
+    headStyles: { fillColor: [11,92,255], textColor: 255 }
+  });
+
+  doc.setFontSize(10);
+  doc.text("Signature : Clement Markus", 14, doc.lastAutoTable.finalY + 15);
+  doc.save("rapport_impot.pdf");
+}
+
 calculerImpots();
 </script>
 </body>

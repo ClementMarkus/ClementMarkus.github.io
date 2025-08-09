@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Canada</title>
-    
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Page Titre</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<link rel="stylesheet" href="css/style.css">
 <body>
-    <!-- Create the header with the text "Dashboard" -->
-    <div class="header">
-        <strong>Dashboard</strong>
-    </div>
 
-    <!-- "Dashboard" section -->
-    <div class="dashboard-section">
-        <!-- Button container -->
-        <div class="button-container">
-            <button class="button" onclick="location.href='index.html';">Accueil</button>
-            <button class="button" onclick="location.href='allocation_strategique.html';">Stratégique</button>
-            <button class="button" onclick="location.href='allocation_tactique.html';">Tactique</button>
-            <button class="button" onclick="location.href='outils.html';">Outils</button>
-            <button class="button" onclick="location.href='fiches_techniques.html';">Fiches</button>
-          </div>
+  <!-- En-tête -->
+  <div class="header">
+    <strong>Marché</strong>
+  </div>
+
+  <!-- Barre de navigation -->
+  <div class="button-container">
+    <button class="button" onclick="location.href='index.html';">Accueil</button>
+    <button class="button" onclick="location.href='allocation_strategique.html';">Stratégique</button>
+    <button class="button" onclick="location.href='allocation_tactique.html';">Tactique</button>
+    <button class="button" onclick="location.href='outils.html';">Outils</button>
+    <button class="button" onclick="location.href='fiches_techniques.html';">Fiches</button>
+  </div>
+
 
         <!-- Flex container for sections -->
         <div class="flex-container">
@@ -55,15 +54,14 @@
                 <div class="dot-container" id="dot-container">
                 </div>
             </div>
-            <div class="button-container">
-                <button class="button" onclick="generatePDF()">Générer PDF</button>
-            </div>
         </div>
         <footer>
-            📈 2024 Calculateur Hypothécaire | Créé avec soin pour vos besoins financiers.
-        </footer>
-    </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-</body>
-
-</div>
+            📈 2024 Dashboard | Créé avec soin pour vos besoins financiers.
+          </footer>
+        
+          <!-- Scripts JS -->
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+          <script src="js/script.js" defer></script>
+        
+        </body>
+        </html>

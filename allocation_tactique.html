@@ -3,14 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Page Titre</title>
+  <title>Dashboard du marché</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.25.2.min.js"></script>
+  <style>
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .table-compact {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .table-compact th {
+      background: #f4f6fb;
+      padding: 10px;
+      text-align: left;
+    }
+    .table-compact td {
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+  </style>
 </head>
 <body>
 
   <!-- En-tête -->
   <div class="header">
-    <strong>Dashboard</strong>
+    <strong>Dashboard du marché</strong>
   </div>
 
   <!-- Barre de navigation -->
@@ -25,26 +49,66 @@
   <!-- Contenu principal -->
   <div class="dashboard-section">
     <div class="flex-container">
+
+      <!-- Section Graphique ETF -->
       <div class="section">
-        <h2>Titre de la section</h2>
-        <p>Contenu à remplacer…</p>
+        <h2>Performance des ETF</h2>
+        <div id="market-chart" style="height:450px;"></div>
       </div>
 
+      <!-- Section Macro -->
       <div class="section">
-        <h2>Autre section</h2>
-        <p>Contenu à remplacer…</p>
+        <h2>Indicateurs macroéconomiques</h2>
+        <table class="table-compact">
+          <thead>
+            <tr><th>Indicateur</th><th>Valeur</th></tr>
+          </thead>
+          <tbody id="macro-table"></tbody>
+        </table>
       </div>
+
     </div>
   </div>
 
   <!-- Pied de page -->
   <footer>
-    📈 2024 Dashboard | Créé avec soin pour vos besoins financiers.
+    📈 2025 Dashboard | Créé avec soin pour vos besoins financiers.
   </footer>
 
-  <!-- Scripts JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-  <script src="js/script.js" defer></script>
+  <!-- Script pour charger les données -->
+  <script>
+    fetch('data/data.json') // Ton fichier généré par le script Python
+      .then(res => res.json())
+      .then(json => {
+        // Graphique ETF
+        let traces = [];
+        for (let ticker in json.etf) {
+          traces.push({
+            x: json.etf[ticker].dates,
+            y: json.etf[ticker].close,
+            name: ticker,
+            type: 'scatter'
+          });
+        }
+        Plotly.newPlot('market-chart', traces, {
+          title: 'Performance historique des ETF',
+          xaxis: { title: 'Date' },
+          yaxis: { title: 'Prix ajusté ($ CAD)' },
+          legend: { orientation: "h" }
+        });
+
+        // Tableau macro
+        let macroHTML = '';
+        for (let key in json.macro) {
+          macroHTML += `<tr><td>${key}</td><td>${json.macro[key]}</td></tr>`;
+        }
+        document.getElementById('macro-table').innerHTML = macroHTML;
+      })
+      .catch(err => {
+        console.error("Erreur chargement données :", err);
+        document.getElementById('macro-table').innerHTML = `<tr><td colspan="2">Impossible de charger les données</td></tr>`;
+      });
+  </script>
 
 </body>
 </html>
