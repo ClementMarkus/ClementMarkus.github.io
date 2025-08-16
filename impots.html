@@ -25,7 +25,7 @@
       <label class="label">Revenu imposable ($)</label>
       <input id="revenu" type="number" value="50000" style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8edf7;margin-bottom:12px">
       <button onclick="calculerImpots()" class="button">Calculer</button>
-      <button class="button" onclick="telechargerPDF()">📄 Télécharger PDF</button>
+      <button class="button" onclick="generatePDF()">📄 Télécharger PDF</button>
 
       <div class="grid" style="margin-top:18px">
         <div class="card">
@@ -53,33 +53,6 @@
   </div>
 
 <script>
-const paliersFed=[{min:0,max:16128.99,taux:0},{min:16129,max:57374.99,taux:0.1211},{min:57375,max:114749.99,taux:0.1712},{min:114750,max:177881.99,taux:0.2171},{min:177882,max:253413.99,taux:0.2422},{min:253414,max:Infinity,taux:0.2756}];
-const paliersQc=[{min:0,max:18570.99,taux:0},{min:18571,max:53254.99,taux:0.14},{min:53255,max:106494.99,taux:0.19},{min:106495,max:129589.99,taux:0.24},{min:129590,max:Infinity,taux:0.2575}];
-
-function impotProgressif(r,paliers){let imp=0;for(const pl of paliers){if(r>pl.min){const tx=Math.min(r,pl.max)-pl.min;if(tx>0)imp+=tx*pl.taux}}return imp;}
-function tauxMarginalCombine(r){return paliersFed.find(p=>r<=p.max).taux+paliersQc.find(p=>r<=p.max).taux;}
-const settings={det:{grossUp:1.38,fedCredit:0.1502,qcCredit:0.1170}};
-
-function tauxDividendeTMI(r){const cfg=settings.det,d=1000,gross=d*cfg.grossUp;
-  let fB=impotProgressif(r,paliersFed),fA=impotProgressif(r+gross,paliersFed),fNet=Math.max(0,(fA-fB)-gross*cfg.fedCredit);
-  let qB=impotProgressif(r,paliersQc),qA=impotProgressif(r+gross,paliersQc),qNet=Math.max(0,(qA-qB)-gross*cfg.qcCredit);
-  return((fNet+qNet)/d)*100;
-}
-function tauxGainEnCapital(r){const d=1000,taxable=d*0.5,b=impotProgressif(r,paliersFed)+impotProgressif(r,paliersQc),
-  a=impotProgressif(r+taxable,paliersFed)+impotProgressif(r+taxable,paliersQc);
-  return((a-b)/d)*100;
-}
-
-function calculerImpots(){
-  const r=Number(document.getElementById('revenu').value)||0;
-  const f=impotProgressif(r,paliersFed),q=impotProgressif(r,paliersQc),tot=f+q,net=r-tot;
-  document.getElementById('impot-total').textContent=tot.toLocaleString(undefined,{maximumFractionDigits:2})+' $';
-  document.getElementById('revenu-net').textContent=net.toLocaleString(undefined,{maximumFractionDigits:2})+' $';
-  document.getElementById('taux-moyen').textContent=((tot/r)*100).toFixed(2)+' %';
-  document.getElementById('taux-marginal').textContent=(tauxMarginalCombine(r)*100).toFixed(2)+' %';
-  document.getElementById('taux-div-det').textContent=tauxDividendeTMI(r).toFixed(2)+' %';
-  document.getElementById('taux-gc').textContent=tauxGainEnCapital(r).toFixed(2)+' %';
-}
 
 function telechargerPDF(){
   const { jsPDF } = window.jspdf;
@@ -117,6 +90,8 @@ function telechargerPDF(){
 }
 
 calculerImpots();
+
 </script>
+<script src="js/script.js"></script>
 </body>
 </html>

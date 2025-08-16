@@ -6,53 +6,22 @@
   <title>Calculatrice Hypothécaire</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input, select {
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      width: 100%;
-    }
-    canvas {
-      margin-top: 30px;
-      max-width: 100%;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 10px;
-      text-align: center;
-    }
-    .flex-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .flex-item {
-      flex: 1;
-      min-width: 300px;
-    }
-  </style>
 </head>
 <body>
+  <!-- En-tête -->
   <div class="header">
     <strong>Calculatrice Hypothécaire</strong>
   </div>
+
+  <!-- Bouton retour -->
   <div class="button-container">
     <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
   </div>
+
+  <!-- Section calculatrice -->
   <div class="dashboard-section flex-container">
+    
+    <!-- Bloc calcul prêt -->
     <div class="section flex-item">
       <form id="formulaire">
         <label for="prix">Prix de la propriété ($) :</label>
@@ -85,134 +54,51 @@
         <button type="button" class="button" onclick="calculerHypotheque()">Calculer</button>
       </form>
 
+      <!-- Résultats -->
       <div id="resultats" class="resultat"></div>
       <canvas id="graphique"></canvas>
       <div id="tableau"></div>
     </div>
 
-    <div class="section flex-item">
-      <h3>🧾 Admissibilité hypothécaire</h3>
-      <form id="form-admissibilite">
-        <label for="salaire">Salaire brut annuel ($) :</label>
-        <input type="number" id="salaire" value="80000" required />
+    <!-- Bloc admissibilité -->
+<div class="section flex-item">
+  <h3>🧾 Admissibilité hypothécaire</h3>
+  <form id="form-admissibilite">
+    <label for="salaire1">Salaire brut annuel Personne 1 ($) :</label>
+    <input type="number" id="salaire1" value="50000" required />
 
-        <label for="chauffage">Coût de chauffage mensuel ($) :</label>
-        <input type="number" id="chauffage" value="150" required />
+    <label for="salaire2">Salaire brut annuel Personne 2 ($) :</label>
+    <input type="number" id="salaire2" value="50000" required />
 
-        <label for="taxes">Taxes foncières mensuelles ($) :</label>
-        <input type="number" id="taxes" value="250" required />
+    <label for="chauffage">Coût de chauffage mensuel ($) :</label>
+    <input type="number" id="chauffage" value="150" required />
 
-        <label for="dettes">Autres dettes mensuelles ($) :</label>
-        <input type="number" id="dettes" value="300" required />
+    <label for="taxes">Taxes foncières mensuelles ($) :</label>
+    <input type="number" id="taxes" value="250" required />
 
-        <button type="button" class="button" onclick="verifierAdmissibilite()">Vérifier</button>
-      </form>
+    <label for="dettes">Autres dettes mensuelles ($) :</label>
+    <input type="number" id="dettes" value="300" required />
 
-      <div id="resultats-admissibilite" class="resultat"></div>
-    </div>
+    <button type="button" class="button" onclick="verifierAdmissibilite()">Vérifier admissibilité</button>
+  </form>
+
+  <div id="resultats-admissibilite" class="resultat"></div>
+
+  <!-- Nouvelle section admissibilité budget -->
+  <h3>💰 Admissibilité budget</h3>
+  <button type="button" class="button" onclick="verifierBudget()">Vérifier budget</button>
+  <div id="resultats-budget" class="resultat"></div>
+</div>
+
+
   </div>
 
+  <!-- Pied de page -->
   <footer>
     🏡 2025 Calculatrice hypothécaire | Développé par Clement Markus.
   </footer>
 
-  <script>
-    let montantPretGlobal = 0;
-    let paiementMensuelGlobal = 0;
-
-    function calculerHypotheque() {
-      const prix = parseFloat(document.getElementById("prix").value);
-      const mise = parseFloat(document.getElementById("mise").value);
-      const miseType = document.getElementById("miseType").value;
-      const tauxAnnuel = parseFloat(document.getElementById("taux").value) / 100;
-      const frequence = document.getElementById("frequence").value;
-      const annees = parseInt(document.getElementById("amortissement").value);
-
-      const freqMap = { mensuel: 12, bihebdo: 26, bihebdo_accelere: 26, hebdo: 52, hebdo_accelere: 52 };
-      const paiementsParAn = freqMap[frequence];
-      const tauxParPeriode = Math.pow(1 + tauxAnnuel, 1 / paiementsParAn) - 1;
-
-      const miseFonds = miseType === "pourcentage" ? prix * (mise / 100) : mise;
-      const montantPret = prix - miseFonds;
-      const nbPaiements = paiementsParAn * annees;
-
-      const paiement = montantPret * (tauxParPeriode / (1 - Math.pow(1 + tauxParPeriode, -nbPaiements)));
-      const coutTotal = paiement * nbPaiements;
-
-      montantPretGlobal = montantPret;
-      paiementMensuelGlobal = paiement * (12 / paiementsParAn);
-
-      document.getElementById("resultats").innerHTML = `
-        <p>Montant du prêt : ${montantPret.toLocaleString()} $</p>
-        <p>Paiement ${frequence} : ${paiement.toFixed(2)} $</p>
-        <p>Coût total du prêt sur ${annees} ans : ${coutTotal.toFixed(2)} $</p>
-      `;
-
-      let solde = montantPret;
-      const valeurs = [], labels = [];
-
-      for (let i = 0; i <= nbPaiements; i++) {
-        if (i % paiementsParAn === 0) {
-          valeurs.push(solde);
-          labels.push(`Année ${i / paiementsParAn}`);
-        }
-        const interet = solde * tauxParPeriode;
-        const capital = paiement - interet;
-        solde -= capital;
-      }
-
-      const ctx = document.getElementById("graphique").getContext("2d");
-      if (window.graph) window.graph.destroy();
-      window.graph = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Solde du prêt',
-            data: valeurs,
-            borderColor: 'green',
-            fill: false
-          }]
-        }
-      });
-
-      let tableau = '<table><tr><th>Période</th><th>Paiement</th><th>Intérêts</th><th>Capital</th><th>Solde</th></tr>';
-      solde = montantPret;
-      for (let i = 1; i <= paiementsParAn * 5; i++) {
-        const interet = solde * tauxParPeriode;
-        const capital = paiement - interet;
-        solde -= capital;
-        tableau += `<tr><td>${i}</td><td>${paiement.toFixed(2)}</td><td>${interet.toFixed(2)}</td><td>${capital.toFixed(2)}</td><td>${solde.toFixed(2)}</td></tr>`;
-      }
-      tableau += '</table>';
-      document.getElementById("tableau").innerHTML = tableau;
-    }
-
-    function verifierAdmissibilite() {
-      const salaire = parseFloat(document.getElementById("salaire").value);
-      const taux = parseFloat(document.getElementById("taux").value);
-      const paiementHypo = paiementMensuelGlobal;
-      const chauffage = parseFloat(document.getElementById("chauffage").value);
-      const taxes = parseFloat(document.getElementById("taxes").value);
-      const dettes = parseFloat(document.getElementById("dettes").value);
-
-      const tauxTest = Math.max(5.25, taux + 2);
-      const revenuMensuel = salaire / 12;
-      const abd = ((paiementHypo + chauffage + taxes) / revenuMensuel) * 100;
-      const atd = ((paiementHypo + chauffage + taxes + dettes) / revenuMensuel) * 100;
-
-      const admissible = abd <= 39 && atd <= 44;
-      const montantMaxPret = (revenuMensuel * 0.39 - chauffage - taxes) * 12 * 25;
-
-      document.getElementById("resultats-admissibilite").innerHTML = `
-        <p>Taux de qualification utilisé : ${tauxTest.toFixed(2)} %</p>
-        <p>Paiement mensuel estimé utilisé : ${paiementHypo.toFixed(2)} $</p>
-        <p>Ratio ABD : ${abd.toFixed(2)} %</p>
-        <p>Ratio ATD : ${atd.toFixed(2)} %</p>
-        <p>${admissible ? '✅ Admissible à l’hypothèque' : '❌ Non admissible à l’hypothèque'}</p>
-        <p>Montant de prêt hypothécaire maximum estimé : ${montantMaxPret.toFixed(0)} $</p>
-      `;
-    }
-  </script>
+  <!-- Script principal -->
+  <script src="js/script.js"></script>
 </body>
 </html>
