@@ -1,56 +1,120 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calcul d'impôt — Résumé</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculateur d'impôt</title>
   <link rel="stylesheet" href="css/style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
+  
 </head>
 <body>
   <div class="header">
     <strong>Calculateur d'impôt</strong>
   </div>
-  <div class="container">
-    <div class="button-container">
-      <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
-    </div>
+  <div class="button-container">
+    <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
+  </div>
 
-    <div class="card">
+
+  <div class="flex-container">
+
+    <!-- Calculatrice -->
+    <div class="card flex-item">
       <label class="label">Nom du client</label>
-      <input id="nom" type="text" placeholder="Ex: Jean Tremblay" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;margin-bottom:12px">
+      <input id="nom" type="text" placeholder="Ex: Jean Tremblay">
 
       <label class="label">Revenu imposable ($)</label>
-      <input id="revenu" type="number" value="50000" style="width:100%;padding:10px;border-radius:10px;border:1px solid #e8edf7;margin-bottom:12px">
-      <button onclick="calculerImpots()" class="button">Calculer</button>
-      <button class="button" onclick="generatePDF()">📄 Télécharger PDF</button>
+      <input id="revenu" type="number" value="50000">
 
-      <div class="grid" style="margin-top:18px">
-        <div class="card">
-          <table class="table-compact">
-            <thead><tr><th colspan="2">Résumé</th></tr></thead>
-            <tbody>
-              <tr><td class="label">Impôt sur le revenu</td><td class="value" id="impot-total">—</td></tr>
-              <tr><td class="label">Revenu net</td><td class="value" id="revenu-net">—</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card">
-          <table class="table-compact">
-            <thead><tr><th colspan="2">Taux d'imposition</th></tr></thead>
-            <tbody>
-              <tr><td class="label">Taux moyen</td><td class="value" id="taux-moyen">—</td></tr>
-              <tr><td class="label">Taux marginal</td><td class="value" id="taux-marginal">—</td></tr>
-              <tr><td class="label">Dividendes déterminés</td><td class="value" id="taux-div-det">—</td></tr>
-              <tr><td class="label">Gains en capital</td><td class="value" id="taux-gc">—</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <button onclick="calculerImpots()" class="button">Calculer</button>
+      <button onclick="telechargerPDF()" class="button">📄 Télécharger PDF</button>
+
+      <div style="margin-top:15px">
+        <table class="table-compact">
+          <thead><tr><th colspan="2">Résumé</th></tr></thead>
+          <tbody>
+            <tr><td>Impôt sur le revenu</td><td id="impot-total">—</td></tr>
+            <tr><td>Revenu net</td><td id="revenu-net">—</td></tr>
+          </tbody>
+        </table>
+        <table class="table-compact" style="margin-top:10px">
+          <thead><tr><th colspan="2">Taux d'imposition</th></tr></thead>
+          <tbody>
+            <tr><td>Taux moyen</td><td id="taux-moyen">—</td></tr>
+            <tr><td>Taux marginal</td><td id="taux-marginal">—</td></tr>
+            <tr><td>Dividendes déterminés</td><td id="taux-div-det">—</td></tr>
+            <tr><td>Gains en capital</td><td id="taux-gc">—</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <!-- Tableau paliers combinés -->
+    <div class="card flex-item" style="flex:0.5;">
+      <h3>📊 Paliers combinés (Revenu imposable)</h3>
+      <table class="table-compact" id="table-paliers-combine">
+        <thead>
+          <tr><th>Revenu imposable ($)</th>
+          <th>Fédéral</th>
+          <th>Provincial</th>
+          <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+          <!-- JS va remplir ici -->
+        </tbody>
+      </table>
+    </div>
+
   </div>
+
+  <script src="js/script.js"></script>
+  <script>
+    // Paliers fédéraux et Québec
+    const paliersFed = [
+      {min:0,max:16128.99,taux:0},
+      {min:16129,max:57374.99,taux:0.1211},
+      {min:57375,max:114749.99,taux:0.1712},
+      {min:114750,max:177881.99,taux:0.2171},
+      {min:177882,max:253413.99,taux:0.2422},
+      {min:253414,max:Infinity,taux:0.2756}
+    ];
+    const paliersQc = [
+      {min:0,max:18570.99,taux:0},
+      {min:18571,max:53254.99,taux:0.14},
+      {min:53255,max:106494.99,taux:0.19},
+      {min:106495,max:129589.99,taux:0.24},
+      {min:129590,max:Infinity,taux:0.2575}
+    ];
+
+    // Génération du tableau combiné
+    function remplirTableauPaliers() {
+      const tableau = document.getElementById('table-paliers-combine').querySelector('tbody');
+      let valeurs = [0];
+
+      [...paliersFed, ...paliersQc].forEach(p => {
+        const minArrondi = Math.round(p.min);
+        if (!valeurs.includes(minArrondi) && minArrondi % 10 === 0) {
+          valeurs.push(minArrondi);
+        }
+      });
+
+      valeurs.sort((a,b)=>a-b);
+
+      tableau.innerHTML = '';
+      valeurs.forEach(v => {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.textContent = v.toLocaleString();
+        tr.appendChild(td);
+        tableau.appendChild(tr);
+      });
+    }
+
+    remplirTableauPaliers();
+  </script>
+
+
 
 <script>
 

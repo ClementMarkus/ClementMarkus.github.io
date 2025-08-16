@@ -333,6 +333,55 @@ function calculerImpots(){
   document.getElementById('taux-gc').textContent=tauxGainEnCapital(r).toFixed(2)+' %';
 }
 
+function remplirTableauPaliers() {
+  const tableau = document.getElementById('table-paliers-combine').querySelector('tbody');
+  const valeurs = [0]; // Commence par 0
+
+  // Ajouter toutes les valeurs min arrondies
+  [...paliersFed, ...paliersQc].forEach(p => {
+    const minEntier = Math.round(p.min);
+    if (!valeurs.includes(minEntier)) valeurs.push(minEntier);
+  });
+
+  valeurs.sort((a, b) => a - b);
+
+  tableau.innerHTML = '';
+
+  valeurs.forEach(revenu => {
+    // Trouver le taux fédéral applicable
+    let tauxFed = paliersFed.find(p => revenu >= p.min && revenu <= p.max)?.taux || 0;
+    // Trouver le taux provincial applicable
+    let tauxQc = paliersQc.find(p => revenu >= p.min && revenu <= p.max)?.taux || 0;
+    // Total
+    let tauxTotal = tauxFed + tauxQc;
+
+    const tr = document.createElement('tr');
+
+    const tdRevenu = document.createElement('td');
+    tdRevenu.textContent = revenu.toLocaleString();
+    tr.appendChild(tdRevenu);
+
+    const tdFed = document.createElement('td');
+    tdFed.textContent = (tauxFed * 100).toFixed(2) + " %";
+    tr.appendChild(tdFed);
+
+    const tdQc = document.createElement('td');
+    tdQc.textContent = (tauxQc * 100).toFixed(2) + " %";
+    tr.appendChild(tdQc);
+
+    const tdTotal = document.createElement('td');
+    tdTotal.textContent = (tauxTotal * 100).toFixed(2) + " %";
+    tr.appendChild(tdTotal);
+
+    tableau.appendChild(tr);
+  });
+}
+
+// Appel de la fonction pour remplir le tableau
+remplirTableauPaliers();
+
+
+
 function revenuNetAnnuel(revenu) {
   const impots = impotProgressif(revenu, paliersFed) + impotProgressif(revenu, paliersQc);
   return revenu - impots;
@@ -459,6 +508,7 @@ function comparerReerCeliFixe() {
   const celiFixe = S * Math.pow(1 + r, N);
   const reerFixe = (S * (1 + t1)) * Math.pow(1 + r, N) * (1 - t2);
   const differenceFixe = reerFixe - celiFixe;
+  pvMistakefixe = Math.abs((S + S * t1) * (1 - t2) - S);
 
   // Texte explicatif
   const explicationFixe = `
@@ -478,7 +528,7 @@ function comparerReerCeliFixe() {
       <p>📈 <strong>Valeur finale CELI :</strong> ${celiFixe.toFixed(2)} $</p>
       <p>📊 <strong>Valeur finale REER :</strong> ${reerFixe.toFixed(2)} $</p>
       <p>🔍 <strong>Différence :</strong> ${Math.abs(differenceFixe.toFixed(2))} $</p>
-  
+      <p>⚠️ <strong>PV de l'erreur :</strong> ${pvMistakefixe.toFixed(2)} $</p>
     </div>
   `;
 
