@@ -427,7 +427,7 @@ function verifierBudget() {
 }
 
 
-let celi = 0, reer = 0, difference = 0, pertePar100 = 0, pvMistake = 0;
+//let celi = 0, reer = 0, difference = 0, pertePar100 = 0, pvMistake = 0;
 
 function comparerReerCeli() {
   const S = parseFloat(document.getElementById('montant').value);
