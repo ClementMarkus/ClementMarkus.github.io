@@ -376,3 +376,142 @@ function verifierBudget() {
     <p><strong>Ratio coût / revenu net :</strong> ${ratio.toFixed(2)} % — ${conformebudget}</p>
   `;
 }
+
+
+let celi = 0, reer = 0, difference = 0, pertePar100 = 0, pvMistake = 0;
+
+function comparerReerCeli() {
+  const S = parseFloat(document.getElementById('montant').value);
+  const r = parseFloat(document.getElementById('taux').value) / 100;
+  const N = parseInt(document.getElementById('annees').value);
+  const t1 = parseFloat(document.getElementById('t1').value) / 100;
+  const t2 = parseFloat(document.getElementById('t2').value) / 100;
+
+  // Valeurs finales
+  celi = S * Math.pow(1 + r, N);
+  reer = (celi / (1 - t1)) * (1 - t2);
+  difference = reer - celi;
+
+  // PV of mistake avec valeur absolue
+  pvMistake = S * Math.abs((t2 - t1) / (1 - t1));
+
+  // Texte explicatif avant résultats
+  const explication = `
+    <div class="explication">
+      <p>💡 <strong>Explication :</strong></p>
+      <p>Si vous investissez ${S.toLocaleString()}$ dans un CELI, il faudrait investir ${(S/(1-t1)).toFixed(2)}$ dans un REER pour obtenir un montant net équivalent après impôts, compte tenu du remboursement d’impôt basé sur le taux marginal de ${(t1*100).toFixed(2)}%.</p>
+      <p>Les deux montants sont ensuite investis à un taux de rendement annuel de ${(r*100).toFixed(2)}% pendant ${N} années.</p>
+      <p>À la sortie, le REER est imposé sur le total retiré au taux de ${(t2*100).toFixed(2)}%, tandis que le CELI reste entièrement exempt d’impôt.</p>
+    </div>
+  `;
+
+  const resultats = `
+    ${explication}
+    <div class="result-box">
+      <p>📈 <strong>Valeur finale net CELI :</strong> ${celi.toFixed(2)} $</p>
+      <p>📊 <strong>Valeur finale net REER :</strong> ${reer.toFixed(2)} $</p>
+      <p>🔍 <strong>Différence :</strong> ${Math.abs(difference.toFixed(2))} $</p>
+      <p>⚠️ <strong>PV de l'erreur :</strong> ${pvMistake.toFixed(2)} $</p>
+    </div>
+  `;
+
+  document.getElementById('resultats').innerHTML = resultats;
+
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (window.barChart) window.barChart.destroy();
+  window.barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['CELI', 'REER'],
+      datasets: [{
+        label: 'Valeur finale ($)',
+        data: [celi, reer],
+        backgroundColor: ['#8884d8', '#82ca9d']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: 'Comparaison de la valeur finale' }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: value => `$${value}` }
+        }
+      }
+    }
+  });
+}
+
+
+function comparerReerCeliFixe() {
+
+  // Utilise les mêmes paramètres que comparerReerCeli()
+  const S = parseFloat(document.getElementById('montant').value);
+  const r = parseFloat(document.getElementById('taux').value) / 100;
+  const N = parseInt(document.getElementById('annees').value);
+  const t1 = parseFloat(document.getElementById('t1').value) / 100;
+  const t2 = parseFloat(document.getElementById('t2').value) / 100;
+
+  // Calcul CELI et REER pour montant fixe
+  const celiFixe = S * Math.pow(1 + r, N);
+  const reerFixe = (S * (1 + t1)) * Math.pow(1 + r, N) * (1 - t2);
+  const differenceFixe = reerFixe - celiFixe;
+
+  // Texte explicatif
+  const explicationFixe = `
+    <div class="explication">
+      <p>💡 <strong>Explication :</strong></p>
+      <p>Si vous avez ${S.toLocaleString()}$ à investir, vous pouvez choisir de le placer dans un CELI ou dans un REER.</p>
+      <p>Dans le CELI, le montant est investi et croît entièrement à l'abri de l'impôt pendant ${N} années à un taux de rendement annuel de ${(r*100).toFixed(2)}%.</p>
+      <p>Dans le REER, le même montant de ${S.toLocaleString()}$ est investi. Vous bénéficiez d’un remboursement d’impôt basé sur votre taux marginal de ${(t1*100).toFixed(2)}%, donc vous investissez ${(S*(1+t1)).toFixed(2)}$ .</p>
+      <p>À la sortie, le REER est imposé sur le total retiré au taux de ${(t2*100).toFixed(2)}%, tandis que le CELI reste entièrement exempt d’impôt.</p>
+    </div>
+  `;
+
+  // Résultats
+  const resultatsFixe = `
+    ${explicationFixe}
+    <div class="result-box">
+      <p>📈 <strong>Valeur finale CELI :</strong> ${celiFixe.toFixed(2)} $</p>
+      <p>📊 <strong>Valeur finale REER :</strong> ${reerFixe.toFixed(2)} $</p>
+      <p>🔍 <strong>Différence :</strong> ${Math.abs(differenceFixe.toFixed(2))} $</p>
+  
+    </div>
+  `;
+
+  // Affiche les résultats
+  document.getElementById('resultats-fixe').innerHTML = resultatsFixe;
+
+  // Graphique
+  const ctx = document.getElementById('chart-fixe').getContext('2d');
+  if (window.barChartFixe) window.barChartFixe.destroy();
+  window.barChartFixe = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['CELI', 'REER'],
+      datasets: [{
+        label: 'Valeur finale ($)',
+        data: [celiFixe, reerFixe],
+        backgroundColor: ['#8884d8', '#82ca9d']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: 'Comparaison de la valeur finale (montant fixe)' }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: value => `$${value}` }
+        }
+      }
+    }
+  });
+}
+
+

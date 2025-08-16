@@ -305,4 +305,15 @@
       height: 300px;
     }
   }
+  .resultats-wrapper {
+  display: flex;
+  gap: 20px; /* espace entre les deux blocs */
+  flex-wrap: wrap; /* pour que ça passe en dessous si l'écran est trop petit */
+}
+
+.resultat-block {
+  flex: 1; /* chaque bloc prend la moitié de la largeur disponible */
+  min-width: 300px; /* largeur minimale pour mobile */
+}
+
   
