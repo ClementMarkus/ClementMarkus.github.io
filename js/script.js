@@ -564,4 +564,122 @@ function comparerReerCeliFixe() {
   });
 }
 
+function calculPointEquilibre() {
+  const ageMin = 60;
+  const ageMax = 72;
+  const reductionAvant = 0.006;
+  const bonificationApres = 0.007;
+  const moisParAn = 12;
 
+  let resultatsTableau = [];
+
+  for (let a = ageMin; a <= ageMax; a++) {
+    let cumulEquilibre = null;
+    let R1;
+
+    if (a < 65) {
+      R1 = 1 - reductionAvant * moisParAn * (65 - a);
+    } else {
+      R1 = 1 + bonificationApres * moisParAn * (a - 65);
+    }
+
+    let nextAge = a + 1;
+    if (nextAge <= ageMax) {
+      let R2 = (nextAge < 65) ? 1 - reductionAvant * moisParAn * (65 - nextAge)
+                              : 1 + bonificationApres * moisParAn * (nextAge - 65);
+      let Y = (R2 * nextAge - R1 * a) / (R2 - R1);
+      cumulEquilibre = Y.toFixed(2);
+    }
+
+    resultatsTableau.push({
+      ageDepart: a,
+      renteProportion: R1.toFixed(3),
+      ageEquilibre: cumulEquilibre ? cumulEquilibre : "N/A"
+    });
+  }
+
+  // Remplir le tableau HTML
+  const tbody = document.getElementById("rrqTable").querySelector("tbody");
+  tbody.innerHTML = "";
+  resultatsTableau.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.ageDepart}</td>
+      <td>${r.renteProportion}</td>
+      <td>${r.ageEquilibre}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Calcul cumulatif pour le graphique
+  const resultatsGraph = calculRenteCumul(100);
+  afficherGraphiqueCumul(resultatsGraph);
+}
+
+// Cumul des rentes jusqu'à maxAge (pour le graphique)
+function calculRenteCumul(maxAge = 100) {
+  const ageMin = 60;
+  const ageMaxDepart = 72;
+  const reductionAvant = 0.006;
+  const bonificationApres = 0.007;
+  const moisParAn = 12;
+
+  let resultats = [];
+
+  for (let depart = ageMin; depart <= ageMaxDepart; depart++) {
+    let cumul = [];
+    let R = (depart < 65) ? 1 - reductionAvant * moisParAn * (65 - depart)
+                          : 1 + bonificationApres * moisParAn * (depart - 65);
+
+    for (let age = ageMin; age <= maxAge; age++) {
+      if (age < depart) {
+        // avant le départ : pas de rente
+        cumul.push(null);
+      } else {
+        let renteAnnee = (age < 65) ? 1 - reductionAvant * moisParAn * (65 - age) : R;
+        let cumulPrecedent = cumul[cumul.length - 1];
+        if (cumulPrecedent == null) cumulPrecedent = 0;
+        cumul.push(renteAnnee * 12 + cumulPrecedent);
+      }
+    }
+
+    resultats.push({ depart, cumul });
+  }
+
+  return resultats;
+}
+
+// Afficher le graphique cumulatif
+function afficherGraphiqueCumul(resultats) {
+  const ctx = document.getElementById('rrqChart').getContext('2d');
+  const labels = Array.from({length: 101-60}, (_, i) => i + 60);
+
+  const datasets = resultats.map(r => ({
+    label: `Départ ${r.depart} ans`,
+    data: r.cumul,
+    borderColor: `hsl(${(r.depart-60)*30},70%,50%)`,
+    fill: false,
+    tension: 0.2,
+    spanGaps: false // très important pour ne pas relier les "null"
+  }));
+
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        title: { display: true, text: 'Cumul total reçu selon âge de départ du RRQ' }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+// Exécuter au chargement du DOM
+document.addEventListener("DOMContentLoaded", () => {
+  calculPointEquilibre();
+});

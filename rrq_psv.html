@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RRQ & PSV</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    .highlight {
+      background-color: #d4f7d4;
+    }
+    #chartContainer {
+      width: 100%;
+      max-width: 700px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <strong>RRQ & PSV</strong>
+  </div>
+
+  <div class="button-container">
+    <button class="button" onclick="location.href='outils.html';">⬅ Retour aux outils</button>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="dashboard-section">
+    <div class="flex-container">
+      <div class="section">
+        <h2>Calcul RRQ : point d'équilibre</h2>
+        
+        <!-- Explication -->
+        <p>
+          Ce tableau montre la <strong>rente proportionnelle</strong> si vous commencez votre RRQ à chaque âge de 60 à 72 ans, 
+          ainsi que l’<strong>âge approximatif du point d’équilibre</strong> avec l’âge suivant. 
+          Le point d’équilibre correspond à l’âge où le cumul des rentes serait équivalent si vous retardiez votre RRQ d’un an.
+        </p>
+
+        <!-- Bouton de calcul -->
+        <button type="button" class="button" onclick="calculPointEquilibre()">Calcul RRQ</button>
+
+        <!-- Tableau dynamique -->
+        <table id="rrqTable">
+          <thead>
+            <tr>
+              <th>Âge de départ</th>
+              <th>Rente proportionnelle</th>
+              <th>Point d'équilibre (âge)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rempli par JS -->
+          </tbody>
+        </table>
+
+        <!-- Graphique -->
+        <div id="chartContainer">
+          <canvas id="rrqChart"></canvas>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Pied de page -->
+  <footer>
+    📈 2024 Dashboard | Créé avec soin pour vos besoins financiers.
+  </footer>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Script JS -->
+  <script src="js/script.js" defer></script>
+
+</body>
+</html>
