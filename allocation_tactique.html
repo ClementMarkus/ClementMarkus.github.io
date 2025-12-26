@@ -52,9 +52,34 @@
 
       <!-- Section Graphique ETF -->
       <div class="section">
-        <h2>Performance des ETF</h2>
-        <div id="market-chart" style="height:450px;"></div>
-      </div>
+                <h2>Value of a $10,000 invested based on the time period</h2>
+                <iframe src="graph/sp_500.html"></iframe>
+            </div>
+    
+            <!-- Section with asset classes returns -->
+            <div class="section">
+                <h2>Asset Classes Returns</h2>
+                <iframe src="graph/pe_us.html"></iframe>
+            </div>
+        </div>
+
+        <!-- Section with economic indicators carousel -->
+        <div class="flex-container">
+            <div class="section2">
+                <h2>Economic Indicators</h2>
+                <div class="iframe-container" id="iframe-container">
+                    <!-- Ajouter les images ici -->
+                    <iframe src="graph/vix.html"></iframe>
+                    <iframe src="graph/pmi_us.html"></iframe>
+                    <iframe src="graph/cpi_us.html"></iframe>
+                    <iframe src="graph/confidence_us.html"></iframe>
+                    <iframe src="graph/fedfunds_us.html"></iframe>
+                    
+                </div>
+                <div class="dot-container" id="dot-container">
+                </div>
+            </div>
+        </div>
 
       <!-- Section Macro -->
       <div class="section">

@@ -1,3 +1,76 @@
+async function genererRapport() {
+
+  let etatCivil = document.getElementById("etat_civil").value;
+  let nbEnfants = document.getElementById("nb_enfants").value;
+  let resident = document.getElementById("resident").value;
+  let revenusEtranger = document.getElementById("revenus_etranger").value;
+
+  // =========================
+  // CONTENU DU RAPPORT (HTML)
+  // =========================
+  let rapportHTML = `
+  <h1>Rapport de planification financière</h1>
+  <p><strong>Date :</strong> ${new Date().toLocaleDateString()}</p>
+
+  <h2>1. Situation personnelle et familiale</h2>
+  `;
+
+  if (etatCivil) {
+    rapportHTML += `<p>État civil : ${etatCivil}</p>`;
+  }
+
+  if (nbEnfants !== "") {
+    rapportHTML += `<p>Nombre d’enfants à charge : ${nbEnfants}</p>`;
+  }
+
+  rapportHTML += `<h2>2. Situation fiscale</h2>`;
+
+  if (resident === "non") {
+    rapportHTML += `
+      <p>
+      Vous êtes réputé résident du Canada si vous séjournez
+      au pays 183 jours ou plus au cours d’une année civile.
+      Une analyse plus approfondie de votre statut fiscal est recommandée.
+      </p>
+    `;
+  }
+
+  if (revenusEtranger === "oui") {
+    rapportHTML += `
+      <p>
+      La présence de revenus de source étrangère peut entraîner
+      des obligations fiscales supplémentaires, incluant des
+      exigences de divulgation.
+      </p>
+    `;
+  }
+
+  rapportHTML += `
+  <h2>Observations du conseiller</h2>
+  <p>____________________________________________________</p>
+
+  <p style="margin-top:40px;">
+  <strong>Clement Markus</strong><br>
+  Conseiller
+  </p>
+  `;
+
+  // =========================
+  // CONVERSION EN WORD
+  // =========================
+  const fileBuffer = await htmlToDocx(rapportHTML);
+
+  const blob = new Blob([fileBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  });
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "rapport_planification_financiere.docx";
+  link.click();
+}
+
+
 function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -565,121 +638,156 @@ function comparerReerCeliFixe() {
 }
 
 function calculPointEquilibre() {
+  const agesDepart = [60, 65, 72];
   const ageMin = 60;
-  const ageMax = 72;
+  const ageMax = 100;
   const reductionAvant = 0.006;
   const bonificationApres = 0.007;
   const moisParAn = 12;
 
-  let resultatsTableau = [];
-
-  for (let a = ageMin; a <= ageMax; a++) {
-    let cumulEquilibre = null;
-    let R1;
-
-    if (a < 65) {
-      R1 = 1 - reductionAvant * moisParAn * (65 - a);
-    } else {
-      R1 = 1 + bonificationApres * moisParAn * (a - 65);
-    }
-
-    let nextAge = a + 1;
-    if (nextAge <= ageMax) {
-      let R2 = (nextAge < 65) ? 1 - reductionAvant * moisParAn * (65 - nextAge)
-                              : 1 + bonificationApres * moisParAn * (nextAge - 65);
-      let Y = (R2 * nextAge - R1 * a) / (R2 - R1);
-      cumulEquilibre = Y.toFixed(2);
-    }
-
-    resultatsTableau.push({
-      ageDepart: a,
-      renteProportion: R1.toFixed(3),
-      ageEquilibre: cumulEquilibre ? cumulEquilibre : "N/A"
-    });
-  }
-
-  // Remplir le tableau HTML
+  // Construire le tableau HTML
   const tbody = document.getElementById("rrqTable").querySelector("tbody");
   tbody.innerHTML = "";
-  resultatsTableau.forEach(r => {
+
+  agesDepart.forEach(a => {
+    let R, bonifReduc;
+    if (a < 65) {
+      R = 1 - reductionAvant * moisParAn * (65 - a);
+      bonifReduc = -7.2;
+    } else if (a === 65) {
+      R = 1; // référence 0%
+      bonifReduc = 0;
+    } else {
+      R = 1 + bonificationApres * moisParAn * (a - 65);
+      bonifReduc = 8.4;
+    }
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${r.ageDepart}</td>
-      <td>${r.renteProportion}</td>
-      <td>${r.ageEquilibre}</td>
+      <td>${a}</td>
+      <td>${(R*100).toFixed(1)}%</td>
+      <td>${bonifReduc > 0 ? '+' : ''}${bonifReduc.toFixed(1)}%</td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Calcul cumulatif pour le graphique
-  const resultatsGraph = calculRenteCumul(100);
-  afficherGraphiqueCumul(resultatsGraph);
+  // Calcul du cumul pour graphique
+  const resultatsGraph = calculRenteCumul(ageMax, agesDepart);
+
+  // Calcul des points de croisement précis
+  const pointsCroisement = [];
+  const combinaisons = [[60,65],[60,72],[65,72]];
+  combinaisons.forEach(([d1,d2]) => {
+    const r1 = resultatsGraph.find(r => r.depart === d1).cumul;
+    const r2 = resultatsGraph.find(r => r.depart === d2).cumul;
+
+    // Commencer à l'âge minimum où les deux lignes existent
+    let startIndex = Math.max(d1, d2) - ageMin;
+    for (let i=startIndex+1; i<r1.length; i++){
+      if(r1[i] !== null && r2[i] !== null && r2[i]>=r1[i]){
+        // Interpolation linéaire pour fraction d'année
+        const y0 = r2[i-1]-r1[i-1];
+        const y1 = r2[i]-r1[i];
+        const fraction = y0/(y0-y1);
+        const ageExact = ageMin + i -1 + fraction;
+        const ans = Math.floor(ageExact);
+        const mois = Math.round((ageExact-ans)*12);
+        const cumulExact = r2[i-1] + (r2[i]-r2[i-1])*fraction;
+
+        pointsCroisement.push({
+          ageExact, 
+          ageText: `${ans} ans ${mois} mois`,
+          cumul: cumulExact,
+          label: `Croisement ${d1} vs ${d2}`
+        });
+        break;
+      }
+    }
+  });
+
+  afficherGraphiqueCumul(resultatsGraph, pointsCroisement);
 }
 
-// Cumul des rentes jusqu'à maxAge (pour le graphique)
-function calculRenteCumul(maxAge = 100) {
-  const ageMin = 60;
-  const ageMaxDepart = 72;
+// Cumul des rentes uniquement pour 60, 65 et 72 ans
+function calculRenteCumul(maxAge, agesDepart) {
   const reductionAvant = 0.006;
   const bonificationApres = 0.007;
   const moisParAn = 12;
+  const ageMin = 60;
 
-  let resultats = [];
-
-  for (let depart = ageMin; depart <= ageMaxDepart; depart++) {
+  return agesDepart.map(depart => {
     let cumul = [];
     let R = (depart < 65) ? 1 - reductionAvant * moisParAn * (65 - depart)
                           : 1 + bonificationApres * moisParAn * (depart - 65);
 
     for (let age = ageMin; age <= maxAge; age++) {
-      if (age < depart) {
-        // avant le départ : pas de rente
-        cumul.push(null);
-      } else {
+      if (age < depart) cumul.push(null);
+      else {
         let renteAnnee = (age < 65) ? 1 - reductionAvant * moisParAn * (65 - age) : R;
-        let cumulPrecedent = cumul[cumul.length - 1];
-        if (cumulPrecedent == null) cumulPrecedent = 0;
+        let cumulPrecedent = cumul[cumul.length - 1] ?? 0;
         cumul.push(renteAnnee * 12 + cumulPrecedent);
       }
     }
-
-    resultats.push({ depart, cumul });
-  }
-
-  return resultats;
+    return { depart, cumul };
+  });
 }
 
-// Afficher le graphique cumulatif
-function afficherGraphiqueCumul(resultats) {
+// Afficher le graphique cumulatif avec points de croisement précis
+function afficherGraphiqueCumul(resultats, pointsCroisement) {
   const ctx = document.getElementById('rrqChart').getContext('2d');
-  const labels = Array.from({length: 101-60}, (_, i) => i + 60);
+  const labels = Array.from({ length: 101 - 60 }, (_, i) => i + 60);
 
+  
   const datasets = resultats.map(r => ({
     label: `Départ ${r.depart} ans`,
     data: r.cumul,
-    borderColor: `hsl(${(r.depart-60)*30},70%,50%)`,
+    borderColor: `hsl(${(r.depart-60)*90},70%,50%)`,
     fill: false,
     tension: 0.2,
-    spanGaps: false // très important pour ne pas relier les "null"
+    spanGaps: false
   }));
 
+  // Ajouter les points de croisement
+  pointsCroisement.forEach(p => {
+    const data = Array(labels.length).fill(null);
+    // Indice pour placer le point
+    const index = Math.round(p.ageExact - 60);
+    data[index] = p.cumul;
+
+    datasets.push({
+      label: p.label + ` (${p.ageText})`,
+      data: data,
+      borderColor: 'red',
+      backgroundColor: 'red',
+      pointRadius: 8,
+      showLine: false
+    });
+  });
+
   new Chart(ctx, {
-    type: 'line',
+    type:'line',
     data: { labels, datasets },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'top' },
-        title: { display: true, text: 'Cumul total reçu selon âge de départ du RRQ' }
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{position:'top', labels:{usePointStyle:true}},
+        title:{display:true,text:'Cumul total reçu selon âge de départ du RRQ'},
+        tooltip:{
+          callbacks:{
+            label: ctx => ctx.raw !== null ? ctx.raw.toFixed(2) : ''
+          }
+        }
       },
-      scales: {
-        y: { beginAtZero: true }
+      scales:{
+        y:{beginAtZero:true, title:{display:true,text:'Rendement cumulatif'}},
+        x:{title:{display:true,text:'Âge'}}
       }
     }
   });
 }
 
-// Exécuter au chargement du DOM
+// Exécution
 document.addEventListener("DOMContentLoaded", () => {
   calculPointEquilibre();
 });
+

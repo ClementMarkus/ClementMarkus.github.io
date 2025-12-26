@@ -26,40 +26,65 @@
         <!-- Flex container for sections -->
         <div class="flex-container">
             <!-- Section with static content -->
-            <div class="section">
-                <h2>Value of a $10,000 invested based on the time period</h2>
-                <iframe src="graph/sp_500.html"></iframe>
-            </div>
-    
-            <!-- Section with asset classes returns -->
-            <div class="section">
-                <h2>Asset Classes Returns</h2>
-                <iframe src="graph/pe_us.html"></iframe>
-            </div>
-        </div>
+            <div class="questionnaire">
 
-        <!-- Section with economic indicators carousel -->
-        <div class="flex-container">
-            <div class="section2">
-                <h2>Economic Indicators</h2>
-                <div class="iframe-container" id="iframe-container">
-                    <!-- Ajouter les images ici -->
-                    <iframe src="graph/vix.html"></iframe>
-                    <iframe src="graph/pmi_us.html"></iframe>
-                    <iframe src="graph/cpi_us.html"></iframe>
-                    <iframe src="graph/confidence_us.html"></iframe>
-                    <iframe src="graph/fedfunds_us.html"></iframe>
-                    
-                </div>
-                <div class="dot-container" id="dot-container">
-                </div>
-            </div>
-        </div>
+  <h2>Questionnaire de planification financière</h2>
+
+  <!-- ===================== -->
+  <!-- Situation personnelle -->
+  <!-- ===================== -->
+  <section class="section">
+    <h3>1. Situation personnelle et familiale</h3>
+
+    <label>État civil</label>
+    <select id="etat_civil">
+      <option value="">-- Choisir --</option>
+      <option value="celibataire">Célibataire</option>
+      <option value="conjoint">Conjoint(e)</option>
+      <option value="marie">Marié(e)</option>
+    </select>
+
+    <label>Nombre d’enfants à charge</label>
+    <input type="number" id="nb_enfants" min="0">
+
+  </section>
+
+  <!-- ================= -->
+  <!-- Situation fiscale -->
+  <!-- ================= -->
+  <section class="section">
+    <h3>2. Situation fiscale</h3>
+
+    <label>Demeurez-vous au Canada toute l’année ?</label>
+    <select id="resident">
+      <option value="">-- Choisir --</option>
+      <option value="oui">Oui</option>
+      <option value="non">Non</option>
+    </select>
+
+    <label>Avez-vous des revenus à l’étranger ?</label>
+    <select id="revenus_etranger">
+      <option value="">-- Choisir --</option>
+      <option value="oui">Oui</option>
+      <option value="non">Non</option>
+    </select>
+
+  </section>
+
+  <!-- Bouton -->
+  <button class="button" onclick="genererRapport()">Générer le rapport</button>
+
+  <!-- Aperçu -->
+  <div id="apercu_rapport" class="apercu"></div>
+
+</div>
+
         <footer>
             📈 2024 Dashboard | Créé avec soin pour vos besoins financiers.
           </footer>
         
           <!-- Scripts JS -->
+           <script src="https://unpkg.com/html-to-docx@1.0.2/dist/html-to-docx.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
           <script src="js/script.js" defer></script>
         
